@@ -1,10 +1,17 @@
 # Arithmetic with only a plus operator
-# Yup
+# Todo, implement plus with binary operators.
 import unittest
 
+def plus(a, b):
+    if a > b:
+        return a | b
+    elif a < b:
+        return b | a
+    elif a == b:
+        return a | b
 
-def minus(first, second):
-    return first + -second
+def minus(a, b):
+    return a + -b
 
 def multiply(multiplied, multiplier):
     result = 0
@@ -14,7 +21,7 @@ def multiply(multiplied, multiplier):
     return result
 
 def divide(divided, divisor):
-    """divide returns 0 if not whole number"""
+    """divide returns 0 if not whole number."""
     result = 0
     for i in range(divided):
         if i == 1 or i == 0:
@@ -28,6 +35,12 @@ def divide(divided, divisor):
 
 
 class test_arithmetic(unittest.TestCase):
+    def test_plus(self):
+        self.assertEqual(plus(20, 99), 119)
+    def test_plus_2(self):
+        self.assertEqual(plus(11, 9), 20)
+    def test_plus_3(self):
+        self.assertEqual(plus(20, 20), 40)
     def test_minus(self):
         self.assertEqual(minus(5, 3), 2)
 
