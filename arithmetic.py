@@ -1,22 +1,22 @@
-# Arithmetic with only a plus operator
-# Todo, implement plus with binary operators.
+# Arithmetic with bitwise operators
+
 import unittest
 
 def plus(a, b):
-    if a > b:
-        return a | b
-    elif a < b:
-        return b | a
-    elif a == b:
-        return a | b
+    while (b != 0): # no more carries to worry about
+        carry = (a & b)
+        a = a ^ b # bitwise or
+        b = carry << 1
+
+    return a
 
 def minus(a, b):
-    return a + -b
+    return a + plus(~b, 1)
 
 def multiply(multiplied, multiplier):
     result = 0
     for i in range(multiplier):
-        result += multiplied
+        result = plus(result, multiplied)
 
     return result
 
@@ -30,17 +30,14 @@ def divide(divided, divisor):
         if target == divided:
             result = i
             break
-
+        
     return result
 
-
 class test_arithmetic(unittest.TestCase):
+    """Tests for arithmetic"""
     def test_plus(self):
         self.assertEqual(plus(20, 99), 119)
-    def test_plus_2(self):
-        self.assertEqual(plus(11, 9), 20)
-    def test_plus_3(self):
-        self.assertEqual(plus(20, 20), 40)
+        
     def test_minus(self):
         self.assertEqual(minus(5, 3), 2)
 
@@ -58,3 +55,4 @@ def tests():
 
 if __name__ == '__main__':
     tests()
+
