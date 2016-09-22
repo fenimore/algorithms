@@ -69,6 +69,8 @@ func SingleByteXORCipher(h []byte, cipher byte) ([]byte, error) {
 }
 
 // CheckFrequency checks frequency of etaoin shrdlu.
+// The higher the counter, the most like the phrase
+// is an English phrase. Very unsophisticated
 func CheckFrequency(data string) int {
 	mostFrequent := "etaoin shrdlu"
 	var counter int
@@ -80,5 +82,10 @@ func CheckFrequency(data string) int {
 			}
 		}
 	}
+
 	return counter
+}
+
+func DetectSingleCharacterXOR() {
+
 }

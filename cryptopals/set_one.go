@@ -41,6 +41,7 @@ func (c CodeSorter) Less(i, j int) bool { return c[i].likely < c[j].likely }
 func c3() {
 	given := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
 	alphabet := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	expected := "X"
 	results := make([]CodeWord, 0)
 	for _, cipher := range alphabet {
 		text, _ := bytes.SingleByteXORCipher([]byte(given), cipher)
@@ -52,12 +53,12 @@ func c3() {
 
 	sort.Sort(CodeSorter(results))
 	mostLikelyWord := results[len(results)-1]
-	fmt.Println(mostLikelyWord.text, "| Cipher:", mostLikelyWord.cipher)
-
+	//fmt.Println(mostLikelyWord.text, "| Cipher:", mostLikelyWord.cipher)
+	fmt.Printf("Challenge 3: %t\n", mostLikelyWord.cipher == expected)
 }
 
 func main() {
-	//c1()
-	//c2()
+	c1()
+	c2()
 	c3()
 }
