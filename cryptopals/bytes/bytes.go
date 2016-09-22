@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
+	"strings"
 )
 
 // HexToBase64 takes in a hex and converts it to base64.
@@ -65,4 +66,19 @@ func SingleByteXORCipher(h []byte, cipher byte) ([]byte, error) {
 	}
 
 	return result, nil
+}
+
+// CheckFrequency checks frequency of etaoin shrdlu.
+func CheckFrequency(data string) int {
+	mostFrequent := "etaoin shrdlu"
+	var counter int
+	data = strings.ToLower(data)
+	for _, l := range data {
+		for _, f := range mostFrequent {
+			if l == f {
+				counter++
+			}
+		}
+	}
+	return counter
 }
