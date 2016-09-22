@@ -1,30 +1,41 @@
 package main
 
-import "fmt"
-import "github.com/polypmer/algor/cryptopals/convert"
+import (
+	"fmt"
+
+	"github.com/polypmer/algor/cryptopals/bytes"
+)
 
 // Convert Hex to Base64
 func c1() {
 	given := "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
 	expected := "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
-	byt, _ := convert.HexToBase64OfByte([]byte(given))
+	byt, _ := bytes.HexToBase64([]byte(given))
 
 	fmt.Printf("Challenge 1: %t\n", string(byt) == expected)
 }
 
-// Fixed Xor
+// Fixed Xor of two equal length Hex
 func c2() {
 	given := "1c0111001f010100061a024b53535009181c"
-	pair := "686974207468652062756c6c277320657965"
+	toXor := "686974207468652062756c6c277320657965"
 	expected := "746865206b696420646f6e277420706c6179"
-	fmt.Println(given, pair, expected)
-	res, _ := convert.FixedXOR([]byte(given), []byte(pair))
-	fmt.Println(string(res))
-	byt, _ := convert.HexToBase64OfString(given)
-	fmt.Println(string(byt))
+	res, _ := bytes.FixedXORHex([]byte(given), []byte(toXor))
+	fmt.Printf("Challenge 2: %t\n", string(res) == expected)
+}
+
+// Single Byte Xor Cipher
+func c3() {
+	given := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+	alphabet := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	for _, cipher := range alphabet {
+		text, _ := bytes.SingleByteXORCipher([]byte(given), cipher)
+		fmt.Println(string(cipher)+": ", string(text))
+	}
 }
 
 func main() {
-	c1()
-	c2()
+	//c1()
+	//c2()
+	c3()
 }
