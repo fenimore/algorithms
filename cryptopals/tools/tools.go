@@ -51,11 +51,45 @@ func (c WordSorter) Less(i, j int) bool { return c[i].Score < c[j].Score }
 // CheckFrequency checks frequency of etaoin shrdlu.
 // The higher the counter, the most like the phrase
 // is an English phrase. Very unsophisticated
-func EvaluatePhrase(data string) float64 {
+func EvaluatePhrase(phrase string) float64 {
 	var score float64
-	phrase := strings.ToLower(data)
-	for _, l := range phrase {
-		score += LETTER_FREQUENCY[string(l)]
+	phrase = strings.ToLower(phrase)
+	var letterCount = map[string]int{
+		"e": 0,
+		"t": 0,
+		"a": 0,
+		"o": 0,
+		"i": 0,
+		"n": 0,
+		"s": 0,
+		"h": 0,
+		"r": 0,
+		"d": 0,
+		"l": 0,
+		"c": 0,
+		"u": 0,
+		"m": 0,
+		"w": 0,
+		"f": 0,
+		"g": 0,
+		"y": 0,
+		"p": 0,
+		"b": 0,
+		"v": 0,
+		"k": 0,
+		"j": 0,
+		"x": 0,
+		"q": 0,
+		"z": 0,
+	}
+
+	for l := range letterCount {
+		count := strings.Count(phrase, l)
+		letterCount[string(l)] = count
+	}
+	for l := range letterCount {
+		val := LETTER_FREQUENCY[string(l)] * float64(letterCount[string(l)])
+		score += val
 	}
 
 	return score

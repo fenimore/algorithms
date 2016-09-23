@@ -30,7 +30,7 @@ func c3() {
 	given := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
 	alphabet := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	//expected := "X"
-	results := make([]tools.Word, 0)
+	results := make(tools.Words, 0)
 	for _, cipher := range alphabet {
 		text, _ := bytes.SingleByteXORCipher([]byte(given), cipher)
 		score := tools.EvaluatePhrase(string(text))
@@ -38,7 +38,8 @@ func c3() {
 			Cipher: string(cipher), Score: score})
 		fmt.Println(string(cipher)+": ", score, string(text))
 	}
-	fmt.Println(tools.Words(results).MostFrequent().Phrase)
+	highest := results.MostFrequent()
+	fmt.Println(highest.Cipher, highest.Phrase)
 }
 
 func c4() {
