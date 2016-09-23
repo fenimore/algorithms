@@ -1,37 +1,67 @@
 package tools
 
+import (
+	"sort"
+	"strings"
+)
 
-map[string]float64
+var LETTER_FREQUENCY = map[string]float64{
+	"e": 12.7,
+	"t": 9.05,
+	"a": 8.16,
+	"o": 7.5,
+	"i": 6.96,
+	"n": 6.74,
+	"s": 6.32,
+	"h": 6.09,
+	"r": 5.98,
+	"d": 4.25,
+	"l": 4.025,
+	"c": 2.782,
+	"u": 2.75,
+	"m": 2.4,
+	"w": 2.36,
+	"f": 2.228,
+	"g": 2.015,
+	"y": 1.974,
+	"p": 1.929,
+	"b": 1.492,
+	"v": 0.978,
+	"k": 0.772,
+	"j": 0.153,
+	"x": 0.150,
+	"q": 0.095,
+	"z": 0.074,
+}
 
 type Word struct {
-	text   string
-	cipher string
-	score int
+	Phrase string
+	Cipher string
+	Score  float64
 }
+
+type Words []Word
 
 type WordSorter []Word
 
 func (c WordSorter) Len() int           { return len(c) }
 func (c WordSorter) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
-func (c WordSorter) Less(i, j int) bool { return c[i].score < c[j].score }
-
+func (c WordSorter) Less(i, j int) bool { return c[i].Score < c[j].Score }
 
 // CheckFrequency checks frequency of etaoin shrdlu.
 // The higher the counter, the most like the phrase
 // is an English phrase. Very unsophisticated
-func CheckFrequency(data string) int {
-	mostFrequent := "etaoin shrdlu"
-	var counter int
-	data = strings.ToLower(data)
-	for _, l := range data {
-	Loop:
-		for _, f := range mostFrequent {
-			if l == f {
-				counter++
-				break Loop
-			}
-		}
+func EvaluatePhrase(data string) float64 {
+	var score float64
+	phrase := strings.ToLower(data)
+	for _, l := range phrase {
+		score += LETTER_FREQUENCY[string(l)]
 	}
 
-	return counter
+	return score
+}
+
+func (w Words) MostFrequent() Word {
+	sort.Sort(WordSorter(w))
+	return w[len(w)-1]
 }
