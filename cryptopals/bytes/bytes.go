@@ -7,7 +7,10 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
+
+	"github.com/polypmer/algor/cryptopals/words"
 )
 
 // HexToBase64 takes in a hex and converts it to base64.
@@ -104,15 +107,26 @@ func DetectSingleCharacterXOR(path string) error {
 	for scanner.Scan() {
 		messages = append(messages, scanner.Text())
 	}
-	fmt.Println("TEST", messages[1], "me")
-	for i, msg := range messages {
-		for j, cipher := range alphabet {
-			text, _ := SingleByteXORCipher([]byte(msg), cipher)
-			freq := CheckFrequency(string(text))
-			if freq > 17 {
-				fmt.Println(i, j, string(text))
+	results := make(words.Words, 0)
+
+	for _, msg := range messages {
+	CipherLoop:
+		for _, cipher := range alphabet {
+			if cipher == 'z' || cipher == 'Z' || cipher == 'l' {
+				break CipherLoop
 			}
+			text, _ := SingleByteXORCipher([]byte(msg), cipher)
+			score := words.EvaluatePhrase(string(text))
+			results = append(results,
+				words.Word{Phrase: string(text),
+					Cipher: string(cipher), Score: score})
 		}
+	}
+	count := len(results)
+	sort.Sort(words.WordSorter(results))
+	for i := 1; i < 30; i++ {
+		res := results[count-1]
+		fmt.Println(res.Score, res.Cipher, res.Phrase)
 	}
 
 	return nil

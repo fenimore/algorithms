@@ -1,4 +1,4 @@
-package tools
+package words
 
 import (
 	"sort"
@@ -6,6 +6,7 @@ import (
 )
 
 var LETTER_FREQUENCY = map[string]float64{
+	" ": 14, // This makes it all fall into place
 	"e": 12.7,
 	"t": 9.05,
 	"a": 8.16,
@@ -48,54 +49,23 @@ func (c WordSorter) Len() int           { return len(c) }
 func (c WordSorter) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
 func (c WordSorter) Less(i, j int) bool { return c[i].Score < c[j].Score }
 
+// Find word with most typical English frequencies.
+func (w Words) MostFrequent() Word {
+	sort.Sort(WordSorter(w))
+	return w[len(w)-1]
+}
+
 // CheckFrequency checks frequency of etaoin shrdlu.
 // The higher the counter, the most like the phrase
 // is an English phrase. Very unsophisticated
 func EvaluatePhrase(phrase string) float64 {
 	var score float64
 	phrase = strings.ToLower(phrase)
-	var letterCount = map[string]int{
-		"e": 0,
-		"t": 0,
-		"a": 0,
-		"o": 0,
-		"i": 0,
-		"n": 0,
-		"s": 0,
-		"h": 0,
-		"r": 0,
-		"d": 0,
-		"l": 0,
-		"c": 0,
-		"u": 0,
-		"m": 0,
-		"w": 0,
-		"f": 0,
-		"g": 0,
-		"y": 0,
-		"p": 0,
-		"b": 0,
-		"v": 0,
-		"k": 0,
-		"j": 0,
-		"x": 0,
-		"q": 0,
-		"z": 0,
-	}
 
-	for l := range letterCount {
-		count := strings.Count(phrase, l)
-		letterCount[string(l)] = count
-	}
-	for l := range letterCount {
-		val := LETTER_FREQUENCY[string(l)] * float64(letterCount[string(l)])
-		score += val
+	for _, l := range phrase {
+		score += LETTER_FREQUENCY[string(l)]
+
 	}
 
 	return score
-}
-
-func (w Words) MostFrequent() Word {
-	sort.Sort(WordSorter(w))
-	return w[len(w)-1]
 }

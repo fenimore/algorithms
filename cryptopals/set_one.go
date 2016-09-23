@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/polypmer/algor/cryptopals/bytes"
-	"github.com/polypmer/algor/cryptopals/tools"
+	"github.com/polypmer/algor/cryptopals/words"
 )
 
 // Convert Hex to Base64
@@ -30,13 +30,12 @@ func c3() {
 	given := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
 	alphabet := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	//expected := "X"
-	results := make(tools.Words, 0)
+	results := make(words.Words, 0)
 	for _, cipher := range alphabet {
 		text, _ := bytes.SingleByteXORCipher([]byte(given), cipher)
-		score := tools.EvaluatePhrase(string(text))
-		results = append(results, tools.Word{Phrase: string(text), //
+		score := words.EvaluatePhrase(string(text))
+		results = append(results, words.Word{Phrase: string(text),
 			Cipher: string(cipher), Score: score})
-		fmt.Println(string(cipher)+": ", score, string(text))
 	}
 	highest := results.MostFrequent()
 	fmt.Println(highest.Cipher, highest.Phrase)
@@ -50,6 +49,6 @@ func c4() {
 func main() {
 	//c1()
 	//c2()
-	c3()
-	//c4()
+	//c3()
+	c4()
 }
