@@ -131,3 +131,27 @@ func DetectSingleCharacterXOR(path string) error {
 
 	return nil
 }
+
+func IceEncrypt(input string) []byte {
+	//result := make([]byte)
+	cipher := []byte{'I', 'C', 'E'}
+
+	data := []byte(input)
+
+	for i := range data {
+		data[i] = data[i] ^ cipher[0]
+		cipher = CycleByte(cipher)
+	}
+
+	result := make([]byte, hex.EncodedLen(len(data)))
+	_ = hex.Encode(result, data)
+
+	return result
+}
+
+// CycleByte Shifts the slice then Pushes it.
+func CycleByte(cipher []byte) []byte {
+	first, cipher := cipher[0], cipher[1:]
+	cipher = append(cipher, first)
+	return cipher
+}
