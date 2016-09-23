@@ -57,8 +57,14 @@ func c3() {
 	fmt.Printf("Challenge 3: %t\n", mostLikelyWord.cipher == expected)
 }
 
+func c4() {
+	_ = bytes.DetectSingleCharacterXOR("inputs/challenge_4.txt")
+
+}
+
 func main() {
-	c1()
-	c2()
-	c3()
+	//c1()
+	//c2()
+	//c3()
+	c4()
 }

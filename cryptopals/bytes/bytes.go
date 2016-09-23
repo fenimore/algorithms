@@ -1,9 +1,12 @@
 package bytes
 
 import (
+	"bufio"
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
+	"fmt"
+	"os"
 	"strings"
 )
 
@@ -76,9 +79,11 @@ func CheckFrequency(data string) int {
 	var counter int
 	data = strings.ToLower(data)
 	for _, l := range data {
+	Loop:
 		for _, f := range mostFrequent {
 			if l == f {
 				counter++
+				break Loop
 			}
 		}
 	}
@@ -86,6 +91,29 @@ func CheckFrequency(data string) int {
 	return counter
 }
 
-func DetectSingleCharacterXOR() {
+func DetectSingleCharacterXOR(path string) error {
+	alphabet := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
 
+	var messages []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		messages = append(messages, scanner.Text())
+	}
+	fmt.Println("TEST", messages[1], "me")
+	for i, msg := range messages {
+		for j, cipher := range alphabet {
+			text, _ := SingleByteXORCipher([]byte(msg), cipher)
+			freq := CheckFrequency(string(text))
+			if freq > 17 {
+				fmt.Println(i, j, string(text))
+			}
+		}
+	}
+
+	return nil
 }
