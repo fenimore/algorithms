@@ -56,10 +56,26 @@ I go crazy when I hear a cymbal`
 
 }
 
+func c6() {
+	input := []byte("this is a test")
+	from := []byte("wokka wokka!!!")
+	data := bytes.ByteToHex(input)
+	comp := bytes.ByteToHex(from)
+	xor := make([]byte, len(data))
+	for i := range data {
+		xor[i] = data[i] ^ comp[i]
+	}
+	//data, _ = bytes.HexToBase64(data)
+	fmt.Println(len(data), len(comp), len(xor))
+	//fmt.Println(string(xor))
+	//fmt.Println(string(data))
+}
+
 func main() {
-	c1()
-	c2()
-	c3()
-	c4() // Failure...
-	c5()
+	//c1()
+	//c2()
+	//c3()
+	//c4() // Failure...
+	//c5()
+	c6() // the real deal
 }

@@ -27,6 +27,12 @@ func HexToBase64(input []byte) ([]byte, error) {
 	return result, nil
 }
 
+func ByteToHex(input []byte) []byte {
+	data := make([]byte, hex.EncodedLen(len(input)))
+	_ = hex.Encode(data, input)
+	return data
+}
+
 // StringHexToBase64 wrapper around HexToBase64 for using
 // strings instead of byte buffers.
 func StringHexToBase64(input string) (string, error) {
@@ -154,4 +160,20 @@ func CycleByte(cipher []byte) []byte {
 	first, cipher := cipher[0], cipher[1:]
 	cipher = append(cipher, first)
 	return cipher
+}
+
+// HammingDistance returns the minimun number of
+// substituions required to change one string into the other.
+func HammingDistance(a, b []byte) int {
+	return 0
+}
+
+// HammingWeight gets us distance
+func HammingWeight(a, b []byte) int {
+	return 0
+}
+
+// PopulationCount returns number of ones in binary rep.
+func PopulationCount(a []byte) int {
+	return 0
 }
