@@ -43,8 +43,8 @@ func c3() {
 
 // Failure
 func c4() {
-	//_ = bytes.DetectSingleCharacterXOR("inputs/challenge_4.txt")
-	fmt.Println("failure - challenge 4")
+	_ = bytes.DetectSingleCharacterXOR("inputs/challenge_4.txt")
+	//fmt.Println("failure - challenge 4")
 }
 
 func c5() {
@@ -75,7 +75,7 @@ func main() {
 	//c1()
 	//c2()
 	//c3()
-	//c4() // Failure...
+	c4() // Failure...
 	//c5()
-	c6() // the real deal
+	//c6() // the real deal
 }

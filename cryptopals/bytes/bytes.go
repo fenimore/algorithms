@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"sort"
 	"strings"
 
 	"github.com/polypmer/algor/cryptopals/words"
@@ -100,6 +99,47 @@ func CheckFrequency(data string) int {
 	return counter
 }
 
+func CheckIfAllLetters(data string) bool {
+	var IS_LETTER = map[string]bool{
+		" ": true,
+		"e": true,
+		"t": true,
+		"a": true,
+		"o": true,
+		"i": true,
+		"n": true,
+		"s": true,
+		"h": true,
+		"r": true,
+		"d": true,
+		"l": true,
+		"c": true,
+		"u": true,
+		"m": true,
+		"w": true,
+		"f": true,
+		"g": true,
+		"y": true,
+		"p": true,
+		"b": true,
+		"v": true,
+		"k": true,
+		"j": true,
+		"x": true,
+		"q": true,
+		"z": true,
+	}
+
+	data = strings.ToLower(data)
+	for _, x := range data {
+		if !IS_LETTER[string(x)] {
+			return false
+		}
+	}
+	return true
+
+}
+
 func DetectSingleCharacterXOR(path string) error {
 	alphabet := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	file, err := os.Open(path)
@@ -116,11 +156,7 @@ func DetectSingleCharacterXOR(path string) error {
 	results := make(words.Words, 0)
 
 	for _, msg := range messages {
-	CipherLoop:
 		for _, cipher := range alphabet {
-			if cipher == 'z' || cipher == 'Z' || cipher == 'l' {
-				break CipherLoop
-			}
 			text, _ := SingleByteXORCipher([]byte(msg), cipher)
 			score := words.EvaluatePhrase(string(text))
 			results = append(results,
@@ -128,11 +164,21 @@ func DetectSingleCharacterXOR(path string) error {
 					Cipher: string(cipher), Score: score})
 		}
 	}
-	count := len(results)
-	sort.Sort(words.WordSorter(results))
-	for i := 1; i < 30; i++ {
-		res := results[count-1]
-		fmt.Println(res.Score, res.Cipher, res.Phrase)
+	//count := len(results)
+	//sort.Sort(words.WordSorter(results))
+	//for i := 1; i < 30; i++ {
+	//res := results[count-1]
+	//	fmt.Println(res.Score, res.Cipher, res.Phrase)
+	//}
+	for idx, res := range results {
+		//fmt.Println(idx, res.Cipher, res.Phrase)
+		//if idx%10 == 0 {
+		//	time.Sleep(5000 * time.Millisecond)
+		//}
+		//if CheckIfAllLetters(res.Phrase) {
+		//fmt.Println(idx, res.Phrase)
+		//}
+		fmt.Println(idx, res.Cipher, res.Phrase)
 	}
 
 	return nil
@@ -162,14 +208,16 @@ func CycleByte(cipher []byte) []byte {
 	return cipher
 }
 
-// HammingDistance returns the minimun number of
+// HammingDistance returns the minimun number fo
 // substituions required to change one string into the other.
+// From wikipedia:
+// For binary strings a and b the Hamming distance is equal to the number of ones (hamming weight) in a XOR b.
 func HammingDistance(a, b []byte) int {
 	return 0
 }
 
 // HammingWeight gets us distance
-func HammingWeight(a, b []byte) int {
+func HammingWeight(a []byte) int {
 	return 0
 }
 
