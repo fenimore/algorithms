@@ -42,6 +42,10 @@ type Word struct {
 	Score  float64
 }
 
+func (w Word) String() string {
+	return w.Cipher + " " + w.Phrase
+}
+
 type Words []Word
 
 type WordSorter []Word

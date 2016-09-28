@@ -72,6 +72,7 @@ func SingleByteXORCipher(h []byte, cipher byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	// fmt.Println(string(cipher), string(data))
 	result := make([]byte, len(data))
 	for i := range data {
 		result[i] = data[i] ^ cipher
@@ -84,7 +85,12 @@ func SingleByteXORCipher(h []byte, cipher byte) ([]byte, error) {
 // When you XOR a space with a byte it'll give you the byte.
 // And the space is the most frequent letter in the english language.
 // SOOOOO, the most frequent byte in the cipher text will be the byte.
-func AssumedByteXORCipher(decod []byte, cipher byte) ([]byte, error) {
+func AssumedByteXORCipher(decod []byte) ([]byte, error) {
+	var cnt int
+	var cipher byte
+	possibleCipher := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+	fmt.Println(string(cipher))
 	return nil, nil
 }
 

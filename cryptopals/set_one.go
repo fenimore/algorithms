@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/hex"
 	"fmt"
 
@@ -40,6 +41,10 @@ func c3() {
 			Cipher: string(cipher), Score: score})
 	}
 	highest := results.MostFrequent()
+	for _, res := range results {
+		fmt.Println(res)
+	}
+	// This one no longer works with altered word detection
 	fmt.Printf("Challenge 3: %t\n", highest.Cipher == expected)
 	// With assuming the byte method:
 	// Gotta decode it first
@@ -48,6 +53,18 @@ func c3() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	var highestCount int
+	var assumedCipher byte
+	for _, b := range alphabet {
+		cnt := bytes.Count(decodedHex, []byte{b})
+		//fmt.Println(string(b))
+		//fmt.Println(cnt)
+		if cnt > highestCount {
+			assumedCipher = b
+			highestCount = cnt
+		}
+	}
+	_, _ = tools.AssumedByteXORCipher(decodedHex, assumedCipher)
 
 }
 
