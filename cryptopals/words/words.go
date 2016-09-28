@@ -1,6 +1,7 @@
 package words
 
 import (
+	"math"
 	"sort"
 	"strings"
 )
@@ -57,15 +58,52 @@ func (w Words) MostFrequent() Word {
 
 // CheckFrequency checks frequency of etaoin shrdlu.
 // The higher the counter, the most like the phrase
-// is an English phrase. Very unsophisticated
+// is an English phrase.
 func EvaluatePhrase(phrase string) float64 {
-	var score float64
+	var sum, score float64
 	phrase = strings.ToLower(phrase)
-
-	for _, l := range phrase {
-		score += LETTER_FREQUENCY[string(l)]
-
+	frequencies := map[string]float64{
+		"E": 0,
+		"T": 0,
+		"A": 0,
+		"O": 0,
+		"I": 0,
+		"N": 0,
+		"S": 0,
+		"R": 0,
+		"H": 0,
+		"D": 0,
+		"L": 0,
+		"U": 0,
+		"C": 0,
+		"M": 0,
+		"F": 0,
+		"Y": 0,
+		"W": 0,
+		"G": 0,
+		"P": 0,
+		"B": 0,
+		"V": 0,
+		"K": 0,
+		"X": 0,
+		"Q": 0,
+		"J": 0,
+		"Z": 0,
 	}
+
+	for letter := range frequencies {
+		count := float64(strings.Count(phrase, letter))
+		frequencies[letter] = count
+		sum += count
+	}
+
+	for letter := range frequencies {
+		frequencies[letter] /= sum
+		score += math.Sqrt(frequencies[letter] * LETTER_FREQUENCY[letter])
+	}
+	//for _, l := range phrase {
+	//	score += LETTER_FREQUENCY[string(l)]
+	//}
 
 	return score
 }

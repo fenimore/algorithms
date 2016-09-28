@@ -1,4 +1,4 @@
-package bytes
+package tools
 
 import (
 	"bufio"
@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/polypmer/algor/cryptopals/words"
@@ -77,6 +78,14 @@ func SingleByteXORCipher(h []byte, cipher byte) ([]byte, error) {
 	}
 
 	return result, nil
+}
+
+// SOOOO
+// When you XOR a space with a byte it'll give you the byte.
+// And the space is the most frequent letter in the english language.
+// SOOOOO, the most frequent byte in the cipher text will be the byte.
+func AssumedByteXORCipher(decod []byte, cipher byte) ([]byte, error) {
+	return nil, nil
 }
 
 // CheckFrequency checks frequency of etaoin shrdlu.
@@ -159,27 +168,28 @@ func DetectSingleCharacterXOR(path string) error {
 		for _, cipher := range alphabet {
 			text, _ := SingleByteXORCipher([]byte(msg), cipher)
 			score := words.EvaluatePhrase(string(text))
+			/// TODO : add idx to words
 			results = append(results,
 				words.Word{Phrase: string(text),
 					Cipher: string(cipher), Score: score})
 		}
 	}
-	//count := len(results)
-	//sort.Sort(words.WordSorter(results))
-	//for i := 1; i < 30; i++ {
-	//res := results[count-1]
-	//	fmt.Println(res.Score, res.Cipher, res.Phrase)
-	//}
-	for idx, res := range results {
-		//fmt.Println(idx, res.Cipher, res.Phrase)
-		//if idx%10 == 0 {
-		//	time.Sleep(5000 * time.Millisecond)
-		//}
-		//if CheckIfAllLetters(res.Phrase) {
-		//fmt.Println(idx, res.Phrase)
-		//}
-		fmt.Println(idx, res.Cipher, res.Phrase)
+	count := len(results)
+	sort.Sort(words.WordSorter(results))
+	for i := 1; i < 30; i++ {
+		res := results[count-1]
+		fmt.Println(res.Score, res.Cipher, res.Phrase)
 	}
+	//for idx, res := range results {
+	//fmt.Println(idx, res.Cipher, res.Phrase)
+	//if idx%10 == 0 {
+	//	time.Sleep(5000 * time.Millisecond)
+	//}
+	//if CheckIfAllLetters(res.Phrase) {
+	//fmt.Println(idx, res.Phrase)
+	//}
+	//	fmt.Println(idx, res.Cipher, res.Phrase)
+	//}
 
 	return nil
 }

@@ -1,9 +1,10 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 
-	"github.com/polypmer/algor/cryptopals/bytes"
+	"github.com/polypmer/algor/cryptopals/tools"
 	"github.com/polypmer/algor/cryptopals/words"
 )
 
@@ -11,7 +12,7 @@ import (
 func c1() {
 	given := "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
 	expected := "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
-	byt, _ := bytes.HexToBase64([]byte(given))
+	byt, _ := tools.HexToBase64([]byte(given))
 
 	fmt.Printf("Challenge 1: %t\n", string(byt) == expected)
 }
@@ -21,7 +22,7 @@ func c2() {
 	given := "1c0111001f010100061a024b53535009181c"
 	toXor := "686974207468652062756c6c277320657965"
 	expected := "746865206b696420646f6e277420706c6179"
-	res, _ := bytes.FixedXORHex([]byte(given), []byte(toXor))
+	res, _ := tools.FixedXORHex([]byte(given), []byte(toXor))
 	fmt.Printf("Challenge 2: %t\n", string(res) == expected)
 }
 
@@ -32,25 +33,34 @@ func c3() {
 	expected := "X"
 	results := make(words.Words, 0)
 	for _, cipher := range alphabet {
-		text, _ := bytes.SingleByteXORCipher([]byte(given), cipher)
+		text, _ := tools.SingleByteXORCipher([]byte(given),
+			cipher)
 		score := words.EvaluatePhrase(string(text))
 		results = append(results, words.Word{Phrase: string(text),
 			Cipher: string(cipher), Score: score})
 	}
 	highest := results.MostFrequent()
 	fmt.Printf("Challenge 3: %t\n", highest.Cipher == expected)
+	// With assuming the byte method:
+	// Gotta decode it first
+	decodedHex := make([]byte, hex.DecodedLen(len([]byte(given))))
+	_, err := hex.Decode(decodedHex, []byte(given))
+	if err != nil {
+		fmt.Println(err)
+	}
+
 }
 
 // Failure
 func c4() {
-	_ = bytes.DetectSingleCharacterXOR("inputs/challenge_4.txt")
+	//_ = tools.DetectSingleCharacterXOR("inputs/challenge_4.txt")
 	//fmt.Println("failure - challenge 4")
 }
 
 func c5() {
 	input := `Burning 'em, if you ain't quick and nimble
 I go crazy when I hear a cymbal`
-	answer := bytes.IceEncrypt(input)
+	answer := tools.IceEncrypt(input)
 	expected := `0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f`
 	fmt.Printf("Challenge 5: %t\n", string(answer) == expected)
 
@@ -59,8 +69,8 @@ I go crazy when I hear a cymbal`
 func c6() {
 	input := []byte("this is a test")
 	from := []byte("wokka wokka!!!")
-	data := bytes.ByteToHex(input)
-	comp := bytes.ByteToHex(from)
+	data := tools.ByteToHex(input)
+	comp := tools.ByteToHex(from)
 	xor := make([]byte, len(data))
 	for i := range data {
 		xor[i] = data[i] ^ comp[i]
@@ -72,10 +82,10 @@ func c6() {
 }
 
 func main() {
-	//c1()
-	//c2()
-	//c3()
+	c1()
+	c2()
+	c3()
 	c4() // Failure...
-	//c5()
+	c5()
 	//c6() // the real deal
 }
