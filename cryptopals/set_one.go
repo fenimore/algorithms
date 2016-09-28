@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/polypmer/algor/cryptopals/tools"
-	"github.com/polypmer/algor/cryptopals/words"
 )
 
 // Convert Hex to Base64
@@ -28,20 +27,7 @@ func c2() {
 // Single Byte Xor Cipher
 func c3() {
 	given := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-	alphabet := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	expected := "X"
-	results := make(words.Words, 0)
-	for _, cipher := range alphabet {
-		text, _ := tools.SingleByteXORCipher([]byte(given),
-			cipher)
-		score := words.EvaluatePhrase(string(text))
-		results = append(results, words.Word{Phrase: string(text),
-			Cipher: string(cipher), Score: score})
-	}
-	// highest := results.MostFrequent()
-
-	// This one no longer works with altered word detection
-
 	// With assuming the byte method:
 	// Gotta decode it first
 	_, c, _ := tools.AssumedByteXORCipher([]byte(given))
@@ -50,7 +36,7 @@ func c3() {
 
 // Failure
 func c4() {
-	//_ = tools.DetectSingleCharacterXOR("inputs/challenge_4.txt")
+	_ = tools.DetectSingleCharacterXOR("inputs/challenge_4.txt")
 	//fmt.Println("failure - challenge 4")
 }
 
@@ -79,10 +65,10 @@ func c6() {
 }
 
 func main() {
-	c1()
-	c2()
-	c3()
+	//c1()
+	//c2()
+	//c3()
 	c4() // Failure...
-	c5()
+	//c5()
 	//c6() // the real deal
 }

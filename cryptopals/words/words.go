@@ -1,39 +1,39 @@
 package words
 
 import (
+	"fmt"
 	"math"
 	"sort"
 	"strings"
 )
 
 var LETTER_FREQUENCY = map[string]float64{
-	" ": 14, // This makes it all fall into place
-	"e": 12.7,
-	"t": 9.05,
-	"a": 8.16,
-	"o": 7.5,
-	"i": 6.96,
-	"n": 6.74,
-	"s": 6.32,
-	"h": 6.09,
-	"r": 5.98,
-	"d": 4.25,
-	"l": 4.025,
-	"c": 2.782,
-	"u": 2.75,
-	"m": 2.4,
-	"w": 2.36,
-	"f": 2.228,
-	"g": 2.015,
-	"y": 1.974,
-	"p": 1.929,
-	"b": 1.492,
-	"v": 0.978,
-	"k": 0.772,
-	"j": 0.153,
-	"x": 0.150,
-	"q": 0.095,
-	"z": 0.074,
+	"E": .1202,
+	"T": .0910,
+	"A": .0812,
+	"O": .0768,
+	"I": .0731,
+	"N": .0695,
+	"S": .0628,
+	"R": .0602,
+	"H": .0592,
+	"D": .0432,
+	"L": .0398,
+	"U": .0288,
+	"C": .0271,
+	"M": .0261,
+	"F": .0230,
+	"Y": .0211,
+	"W": .0209,
+	"G": .0203,
+	"P": .0182,
+	"B": .0149,
+	"V": .0111,
+	"K": .0069,
+	"X": .0017,
+	"Q": .0011,
+	"J": .0010,
+	"Z": .0007,
 }
 
 type Word struct {
@@ -43,7 +43,8 @@ type Word struct {
 }
 
 func (w Word) String() string {
-	return w.Cipher + " " + w.Phrase
+	result := fmt.Sprintf("%s, %f, %s", w.Cipher, w.Score, w.Phrase)
+	return result
 }
 
 type Words []Word
@@ -65,7 +66,7 @@ func (w Words) MostFrequent() Word {
 // is an English phrase.
 func EvaluatePhrase(phrase string) float64 {
 	var sum, score float64
-	phrase = strings.ToLower(phrase)
+	phrase = strings.ToUpper(phrase)
 	frequencies := map[string]float64{
 		"E": 0,
 		"T": 0,
@@ -95,6 +96,8 @@ func EvaluatePhrase(phrase string) float64 {
 		"Z": 0,
 	}
 
+	// This normalizes? Or something.
+	// I'm not totally sure what I'm doing here.
 	for letter := range frequencies {
 		count := float64(strings.Count(phrase, letter))
 		frequencies[letter] = count
@@ -105,9 +108,6 @@ func EvaluatePhrase(phrase string) float64 {
 		frequencies[letter] /= sum
 		score += math.Sqrt(frequencies[letter] * LETTER_FREQUENCY[letter])
 	}
-	//for _, l := range phrase {
-	//	score += LETTER_FREQUENCY[string(l)]
-	//}
 
 	return score
 }

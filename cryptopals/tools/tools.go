@@ -106,7 +106,8 @@ func AssumedByteXORCipher(h []byte) ([]byte, byte, error) {
 			cipher = b
 		}
 	}
-	cipher = []byte(bytes.ToUpper([]byte{cipher}[0 : 0+1]))[0]
+	// Maybe it ought to be uppercase what?
+	//cipher = []byte(bytes.ToUpper([]byte{cipher}[0 : 0+1]))[0]
 	// Find Result
 	result := make([]byte, len(decod))
 	for i := range decod {
@@ -177,7 +178,6 @@ func CheckIfAllLetters(data string) bool {
 }
 
 func DetectSingleCharacterXOR(path string) error {
-	alphabet := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	file, err := os.Open(path)
 	if err != nil {
 		return err
@@ -189,34 +189,21 @@ func DetectSingleCharacterXOR(path string) error {
 	for scanner.Scan() {
 		messages = append(messages, scanner.Text())
 	}
-	results := make(words.Words, 0)
+	w := make(words.Words, 0)
 
 	for _, msg := range messages {
-		for _, cipher := range alphabet {
-			text, _ := SingleByteXORCipher([]byte(msg), cipher)
-			score := words.EvaluatePhrase(string(text))
-			/// TODO : add idx to words
-			results = append(results,
-				words.Word{Phrase: string(text),
-					Cipher: string(cipher), Score: score})
-		}
+		text, c, _ := AssumedByteXORCipher([]byte(msg))
+		// fmt.Println(string(c), string(text))
+		s := words.EvaluatePhrase(string(text))
+		w = append(w,
+			words.Word{Phrase: string(text), Score: s,
+				Cipher: string(c)})
 	}
-	count := len(results)
-	sort.Sort(words.WordSorter(results))
-	for i := 1; i < 30; i++ {
-		res := results[count-1]
-		fmt.Println(res.Score, res.Cipher, res.Phrase)
+	sort.Sort(words.WordSorter(w))
+	//fmt.Println(w[0].Score, w[len(w)-2].Score)
+	for i := 1; i < len(w); i++ {
+		fmt.Println(w[len(w)-i])
 	}
-	//for idx, res := range results {
-	//fmt.Println(idx, res.Cipher, res.Phrase)
-	//if idx%10 == 0 {
-	//	time.Sleep(5000 * time.Millisecond)
-	//}
-	//if CheckIfAllLetters(res.Phrase) {
-	//fmt.Println(idx, res.Phrase)
-	//}
-	//	fmt.Println(idx, res.Cipher, res.Phrase)
-	//}
 
 	return nil
 }
