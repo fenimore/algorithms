@@ -2,6 +2,7 @@ package tools
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
@@ -85,13 +86,33 @@ func SingleByteXORCipher(h []byte, cipher byte) ([]byte, error) {
 // When you XOR a space with a byte it'll give you the byte.
 // And the space is the most frequent letter in the english language.
 // SOOOOO, the most frequent byte in the cipher text will be the byte.
-func AssumedByteXORCipher(decod []byte) ([]byte, error) {
+func AssumedByteXORCipher(h []byte) ([]byte, byte, error) {
+	// Decode Hex
+	decod := make([]byte, hex.DecodedLen(len([]byte(h))))
+	_, err := hex.Decode(decod, []byte(h))
+	if err != nil {
+		return nil, 'x', err
+	}
+
+	// Find Cipher, most common byte
+	// Seeing as how space is the most common letter?
 	var cnt int
 	var cipher byte
-	possibleCipher := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-	fmt.Println(string(cipher))
-	return nil, nil
+	ciphers := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	for _, b := range ciphers {
+		// The count of b in decoded hex
+		if cnt < bytes.Count(decod, []byte{b}) {
+			cnt = bytes.Count(decod, []byte{b})
+			cipher = b
+		}
+	}
+	cipher = []byte(bytes.ToUpper([]byte{cipher}[0 : 0+1]))[0]
+	// Find Result
+	result := make([]byte, len(decod))
+	for i := range decod {
+		result[i] = decod[i] ^ cipher
+	}
+	return result, cipher, nil
 }
 
 // CheckFrequency checks frequency of etaoin shrdlu.

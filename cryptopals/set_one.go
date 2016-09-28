@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"encoding/hex"
 	"fmt"
 
 	"github.com/polypmer/algor/cryptopals/tools"
@@ -40,32 +38,14 @@ func c3() {
 		results = append(results, words.Word{Phrase: string(text),
 			Cipher: string(cipher), Score: score})
 	}
-	highest := results.MostFrequent()
-	for _, res := range results {
-		fmt.Println(res)
-	}
+	// highest := results.MostFrequent()
+
 	// This one no longer works with altered word detection
-	fmt.Printf("Challenge 3: %t\n", highest.Cipher == expected)
+
 	// With assuming the byte method:
 	// Gotta decode it first
-	decodedHex := make([]byte, hex.DecodedLen(len([]byte(given))))
-	_, err := hex.Decode(decodedHex, []byte(given))
-	if err != nil {
-		fmt.Println(err)
-	}
-	var highestCount int
-	var assumedCipher byte
-	for _, b := range alphabet {
-		cnt := bytes.Count(decodedHex, []byte{b})
-		//fmt.Println(string(b))
-		//fmt.Println(cnt)
-		if cnt > highestCount {
-			assumedCipher = b
-			highestCount = cnt
-		}
-	}
-	_, _ = tools.AssumedByteXORCipher(decodedHex, assumedCipher)
-
+	_, c, _ := tools.AssumedByteXORCipher([]byte(given))
+	fmt.Printf("Challenge 3: %t\n", string(c) == expected)
 }
 
 // Failure
