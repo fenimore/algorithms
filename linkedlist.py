@@ -1,3 +1,6 @@
+"""
+Implementation of Linked List in Python 3 with basic methods
+"""
 class Node(object):
     """Node is the basic object in a linked list"""
     value = ""
@@ -48,11 +51,28 @@ class Node(object):
             else:
                 print(nxt.reference)
                 nxt = nxt.reference
-
-    def get_next(self):
-        if not self.is_last():
-            return self.reference
+    
+    def is_first(self):
+        """true if node is first in list"""
+        if not self.parent:
+            return True
+        else:
+            return False
                 
+    def is_last(self):
+        """true if node is last in list"""
+        if not self.reference:
+            return True
+        else:
+            return False
+
+    def find_last(self):
+        """returns the last node in list"""
+        if self.is_last():
+            return self
+        else:
+            return self.reference.find_last()
+        
     def get_list(self):
         """get_list returns a list of all nodes """
         li = []
@@ -80,25 +100,6 @@ class Node(object):
                     bck = bck.parent
                     
         return li
-                
-    def is_first(self):
-        if not self.parent:
-            return True
-        else:
-            return False
-                
-    def is_last(self):
-        if not self.reference:
-            return True
-        else:
-            return False
-
-    def find_last(self):
-        if self.is_last():
-            return self
-        else:
-            return self.reference.find_last()
-
 
 if __name__ == "__main__":
     n = Node("The First")
