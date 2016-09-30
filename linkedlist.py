@@ -56,14 +56,17 @@ class Node(object):
             return False
 
     def find_last(self):
-        if self.is_last:
+        if self.is_last():
             return self
         else:
-            self.reference.find_last()
-            
-            
+            return self.reference.find_last()
 
 
+#def find_last_node(node):
+#    if node.is_last():
+##        return node
+#    else:
+        
 
 if __name__ == "__main__":
     n = Node("The First")
@@ -79,6 +82,7 @@ if __name__ == "__main__":
     print("Is the first last?", n.is_last())
     n.reference.reference.rem()
     print("Is the third last?", n.reference.reference.is_last())
+    print("Is the first last?", n.is_last())
     n_last = n.find_last()
     print(n_last)
     
