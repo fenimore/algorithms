@@ -20,20 +20,24 @@ class Node(object):
         new_next = self.reference.reference
         self.reference = new_next
         
-
-def NewNode(value):
-    return Node(value)
+    def list_nodes(self):
+        print(self)
+        nxt = self.reference
+        print(nxt)
+        while True:
+            if not nxt.reference:
+                break
+            else:
+                print(nxt.reference)
+                nxt = nxt.reference
 
 
 if __name__ == "__main__":
-    n = Node("The first")
-    print(n)
+    n = Node("The First")
     n.add("The Second")
-    print(n.reference)
     n.add("The Third")
-    print(n.reference.reference)
     n.add("The Fourth")
-    print(n.reference.reference.reference)
+    print(n.list_nodes())
     n.rem()
-    print(n, n.reference, n.reference.reference)
+    print(n.list_nodes())
     
