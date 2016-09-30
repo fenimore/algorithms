@@ -26,7 +26,8 @@ class Node(object):
         """remove next node"""
         new_next = self.reference.reference
         self.reference = new_next
-        new_next.parent = self
+        if new_next:
+             new_next.parent = self
 
     def ins(self, v):
         """insert"""
@@ -48,6 +49,20 @@ class Node(object):
                 print(nxt.reference)
                 nxt = nxt.reference
 
+    def is_last(self):
+        if not self.reference:
+            return True
+        else:
+            return False
+
+    def find_last(self):
+        if self.is_last:
+            return self
+        else:
+            self.reference.find_last()
+            
+            
+
 
 
 if __name__ == "__main__":
@@ -60,5 +75,12 @@ if __name__ == "__main__":
     print(n.list_nodes())
     n.ins("The New Second")
     print(n.list_nodes())
-    print(n.reference.parent)
+    print("Parent of Second:", n.reference.parent)
+    print("Is the first last?", n.is_last())
+    n.reference.reference.rem()
+    print("Is the third last?", n.reference.reference.is_last())
+    n_last = n.find_last()
+    print(n_last)
+    
+    #print("Find Last:", print(n.find_last))
     
