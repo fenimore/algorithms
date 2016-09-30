@@ -54,9 +54,11 @@ class Node(object):
             return self.reference
                 
     def get_list(self):
-        """get_list returns a list of all nodes"""
+        """get_list returns a list of all nodes """
         li = []
         li.append(self)
+        look_backwards = not self.is_first()
+        # First get Forward
         if not self.is_last():
             nxt = self.reference
         else:
@@ -68,8 +70,22 @@ class Node(object):
                 break
             else:
                 nxt = nxt.reference
-
+        if look_backwards:
+            bck = self.parent
+            while True:
+                li.insert(0, bck)
+                if bck.is_first():
+                    break
+                else:
+                    bck = bck.parent
+                    
         return li
+                
+    def is_first(self):
+        if not self.parent:
+            return True
+        else:
+            return False
                 
     def is_last(self):
         if not self.reference:
@@ -105,5 +121,9 @@ if __name__ == "__main__":
     for node in node_list:
         print(node)
     print("Print parent of second node:", node_list[1].parent)
-        
+    node_list = n.reference.get_list()
+    print("Printing Node List, Collected from Second:")
+    for node in node_list:
+        # Ought to be the same as previous list
+        print(node)
         
