@@ -49,6 +49,28 @@ class Node(object):
                 print(nxt.reference)
                 nxt = nxt.reference
 
+    def get_next(self):
+        if not self.is_last():
+            return self.reference
+                
+    def get_list(self):
+        """get_list returns a list of all nodes"""
+        li = []
+        li.append(self)
+        if not self.is_last():
+            nxt = self.reference
+        else:
+            return li
+        
+        while True:
+            li.append(nxt)
+            if nxt.is_last():
+                break
+            else:
+                nxt = nxt.reference
+
+        return li
+                
     def is_last(self):
         if not self.reference:
             return True
@@ -61,12 +83,6 @@ class Node(object):
         else:
             return self.reference.find_last()
 
-
-#def find_last_node(node):
-#    if node.is_last():
-##        return node
-#    else:
-        
 
 if __name__ == "__main__":
     n = Node("The First")
@@ -82,9 +98,12 @@ if __name__ == "__main__":
     print("Is the first last?", n.is_last())
     n.reference.reference.rem()
     print("Is the third last?", n.reference.reference.is_last())
-    print("Is the first last?", n.is_last())
     n_last = n.find_last()
-    print(n_last)
-    
-    #print("Find Last:", print(n.find_last))
-    
+    print("The last is:", n_last)
+    node_list = n.get_list()
+    print("Printing Node List:")
+    for node in node_list:
+        print(node)
+    print("Print parent of second node:", node_list[1].parent)
+        
+        
