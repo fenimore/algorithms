@@ -33,17 +33,25 @@ def love_sort(input_array):
 
 def merge(a, b):
     """Takes two values, and returns a list of them
-    merged..."""
-    if a > b:
-        return [b, a]
+    merged...Or rather, with the first values of each
+    set to a proper position?
+    """
+    y = a[0]
+    z = b[0]
+    a.remove(a[0])
+    b.remove(b[0])
+    if y < z:
+        x = [y, z]
     else:
-        return [a, b]
+        x = [z, y]
+    return x + a + b
 
 def divide(array):
+    """Divides an array into a list of two lists
+    where the input is cut in half"""
     a = array[:int(len(array)/2)]
     b = array[int(len(array)/2):]
     return [a, b]
-    
 
 def merge_sort(array):
     """From Wikipedia:
@@ -53,20 +61,22 @@ def merge_sort(array):
     Finally all the elements are sorted and merge.
     """
     # : first means first half
-    if len(array) > 1:
-        array = divide(array)
-        a = merge_sort(array[0])
-        b = merge_sort(array[1])
-        print(a, b)
-        return a, b
-        #z = merge_sort(a[0])
-        #merge_sort(a[1])        
-        #merge_sort(b[0])
-        #merge_sort(b[1])        
-        #return merge(a[0], b[0])
+    if len(array) < 1:
+        return array
+    a = divide(array)[0]
+    b = divide(array)[1]
+    new = merge(a, b)
+    return new
 
+def well(array):
+    size = len(array)
+    for _ in range(size):
+        array = merge_sort(array)
+    return array
+        
 if __name__ == "__main__":
     print("Test Subject 1", test_list)
     print(love_sort(test_list))  
     print("Merge")
     print(merge_sort(test_list))
+    print(well(test_list))
