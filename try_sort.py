@@ -36,15 +36,31 @@ def merge(a, b):
     merged...Or rather, with the first values of each
     set to a proper position?
     """
-    y = a[0]
-    z = b[0]
-    a.remove(a[0])
-    b.remove(b[0])
+    a = deque(a)
+    b = deque(b)
+    y = a.popleft()
+    z = b.popleft()
+
     if y < z:
         x = [y, z]
     else:
         x = [z, y]
-    return x + a + b
+
+    if len(a) > 0:
+        a = merge(a, b)
+        b = []
+    return x + list(a) + list(b)
+
+def merger(a, b):
+    a = deque(a)
+    b = deque(b)
+    y = a.popleft()
+    z = b.popleft()
+    if y < z:
+        x = [y, z]
+    else:
+        x = [z, y]
+    return x + list(a) + list(b)
 
 def divide(array):
     """Divides an array into a list of two lists
@@ -61,22 +77,19 @@ def merge_sort(array):
     Finally all the elements are sorted and merge.
     """
     # : first means first half
-    if len(array) < 1:
+    if len(array) <= 1:
         return array
-    a = divide(array)[0]
-    b = divide(array)[1]
-    new = merge(a, b)
-    return new
+    left = divide(array)[0]
+    right = divide(array)[1]
+    left = merge_sort(left)
+    right = merge_sort(right)
+    print(left, right)
+    return merge(left, right)
+    
 
-def well(array):
-    size = len(array)
-    for _ in range(size):
-        array = merge_sort(array)
-    return array
         
 if __name__ == "__main__":
     print("Test Subject 1", test_list)
     print(love_sort(test_list))  
     print("Merge")
     print(merge_sort(test_list))
-    print(well(test_list))
