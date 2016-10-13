@@ -31,36 +31,26 @@ def love_sort(input_array):
 
     return list(array)
 
+"""
+MERGE SORT
+"""
+
 def merge(a, b):
-    """Takes two values, and returns a list of them
-    merged...Or rather, with the first values of each
-    set to a proper position?
-    """
-    a = deque(a)
-    b = deque(b)
-    y = a.popleft()
-    z = b.popleft()
-
-    if y < z:
-        x = [y, z]
-    else:
-        x = [z, y]
-
-    if len(a) > 0:
-        a = merge(a, b)
-        b = []
-    return x + list(a) + list(b)
-
-def merger(a, b):
+    """merge two already sorted lists"""
     result = []
     a = deque(a)
     b = deque(b)
-    if a[0] < b[0]:
+    while len(a) > 0 and len(b) > 0:
+        if a[0] < b[0]:
+            result.append(a.popleft())
+        else:
+            result.append(b.popleft())
+            
+    while len(a) > 0:
         result.append(a.popleft())
-    else:
+    while len(b) > 0:
         result.append(b.popleft())
-
-    
+        
     return result + list(a) + list(b)
         
 
@@ -85,8 +75,7 @@ def merge_sort(array):
     right = divide(array)[1]
     left = merge_sort(left)
     right = merge_sort(right)
-    print(left, right)
-    return merger(left, right)
+    return merge(left, right)
     
 
         
