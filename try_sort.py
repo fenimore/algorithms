@@ -52,15 +52,17 @@ def merge(a, b):
     return x + list(a) + list(b)
 
 def merger(a, b):
+    result = []
     a = deque(a)
     b = deque(b)
-    y = a.popleft()
-    z = b.popleft()
-    if y < z:
-        x = [y, z]
+    if a[0] < b[0]:
+        result.append(a.popleft())
     else:
-        x = [z, y]
-    return x + list(a) + list(b)
+        result.append(b.popleft())
+
+    
+    return result + list(a) + list(b)
+        
 
 def divide(array):
     """Divides an array into a list of two lists
@@ -84,7 +86,7 @@ def merge_sort(array):
     left = merge_sort(left)
     right = merge_sort(right)
     print(left, right)
-    return merge(left, right)
+    return merger(left, right)
     
 
         
