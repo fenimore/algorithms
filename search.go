@@ -19,7 +19,8 @@ func search(target int, sorted []int) int {
 	if target == middle {
 		return M
 	} else if target > middle {
-
+		return
 	} else if target < middle {
+		return
 	}
 }
