@@ -4,7 +4,10 @@ package main
 import "fmt"
 
 func main() {
-	x := []int{3, 2, 6, 1, 8, 7, 4, 5}
+	//x := []int{3, 2, 6, 1, 8, 7, 4, 5}
+	//x := []int{3, 2, 6, 1, 8, 7, 4, 5, 11, 45, 54, 65}
+	//x := []int{3, 2, 6, 1, 8, 7, 4, 5, 11, 45, 54}
+	x := []int{3, 2, 6, 11, 8, 7, 4, 11, 11, 45, 54, 65}
 	fmt.Println(MergeSort(x))
 }
 
@@ -35,6 +38,9 @@ func Merge(a, b, c []int) []int {
 		c = append(c, b[0])
 		b = b[1:]
 	case a[0] < b[0]:
+		c = append(c, a[0])
+		a = a[1:]
+	case a[0] == b[0]:
 		c = append(c, a[0])
 		a = a[1:]
 	}
