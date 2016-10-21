@@ -34,7 +34,7 @@
    (append c (list (car a)))
    )
 
-;;  (if
+;;s  (if
   ;;(display (> (car a) (car b)))
   )
 
