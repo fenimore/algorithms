@@ -4,24 +4,32 @@ package main
 import "fmt"
 
 func main() {
-	c := make([]int, 0)
-	a := []int{1, 3, 4}
-	b := []int{2, 5, 6}
-	fmt.Println(merge(a, b, c))
+	x := []int{3, 2, 6, 1, 8, 7, 4, 5}
+	fmt.Println(MergeSort(x))
+}
 
-	x := []int{1, 5, 2, 6, 4, 6, 8, 3}
-	fmt.Println(split(x))
+// mergeSort sorts a list.
+func MergeSort(unsorted []int) []int {
+	c := make([]int, 0)
+	a, b := Split(unsorted)
+	if len(a) < 2 {
+		return Merge(a, b, c)
+	} else {
+		a = MergeSort(a)
+		b = MergeSort(b)
+	}
+	return c
 }
 
 // Split returns two slice, halving the input slice.
-func split(x []int) ([]int, []int) {
+func Split(x []int) ([]int, []int) {
 	mid := len(x) / 2
 	return x[:mid], x[mid:]
 }
 
 // Merge, assume the two lists are sorted.
 // Pass in an empty list three cause it's recursive
-func merge(a, b, c []int) []int {
+func Merge(a, b, c []int) []int {
 	switch {
 	case a[0] > b[0]:
 		c = append(c, b[0])
@@ -32,7 +40,7 @@ func merge(a, b, c []int) []int {
 	}
 	//fmt.Println(a, b, c)
 	if !(len(a) == 0 || len(b) == 0) {
-		return merge(a, b, c)
+		return Merge(a, b, c)
 	}
 	if len(a) > len(b) {
 		c = append(c, a...)
