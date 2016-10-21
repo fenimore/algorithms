@@ -6,18 +6,23 @@ test_list = [3, 2,  5, 12, 7, 1, 44, 666]
 test_2_list = [1, 4, 5, 7, 8]
 
 
-          
+
+#def quick_sort(input_array):
+
+
+
+
 def love_sort(input_array):
     """My attempt at a sort algorithm.
-    
-    The idea is to insert an item into the 
+
+    The idea is to insert an item into the
     beginning of a list unless it is greater
     than the first item.
     """
     items = deque(input_array) # input
     array = deque([])          # result
     array.append(items.popleft())
-    
+
     for item in items:
         idx = 0
         if item < array[idx]:
@@ -45,14 +50,14 @@ def merge(a, b):
             result.append(a.popleft())
         else:
             result.append(b.popleft())
-            
+
     while len(a) > 0:
         result.append(a.popleft())
     while len(b) > 0:
         result.append(b.popleft())
-        
+
     return result + list(a) + list(b)
-        
+
 
 def divide(array):
     """Divides an array into a list of two lists
@@ -64,8 +69,8 @@ def divide(array):
 def merge_sort(array):
     """From Wikipedia:
     First divide the list into the smallest unit (1 element),
-    then compare each element with the adjacent list to sort 
-    and merge the two adjacent lists. 
+    then compare each element with the adjacent list to sort
+    and merge the two adjacent lists.
     Finally all the elements are sorted and merge.
     """
     # : first means first half
@@ -76,11 +81,11 @@ def merge_sort(array):
     left = merge_sort(left)
     right = merge_sort(right)
     return merge(left, right)
-    
 
-        
+
+
 if __name__ == "__main__":
     print("Test Subject 1", test_list)
-    print(love_sort(test_list))  
+    print(love_sort(test_list))
     print("Merge")
     print(merge_sort(test_list))
