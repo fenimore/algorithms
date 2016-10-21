@@ -10,13 +10,13 @@ func main() {
 
 // mergeSort sorts a list.
 func MergeSort(unsorted []int) []int {
+	fmt.Println(unsorted)
 	c := make([]int, 0)
 	a, b := Split(unsorted)
-	if len(a) < 2 {
-		return Merge(a, b, c)
+	if len(a) > 1 {
+		c = Merge(MergeSort(a), MergeSort(b), c)
 	} else {
-		a = MergeSort(a)
-		b = MergeSort(b)
+		c = Merge(a, b, c)
 	}
 	return c
 }
