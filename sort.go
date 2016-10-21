@@ -1,3 +1,4 @@
+// Sort, Divide and conquer, merge sort. O(n log(n))?
 package main
 
 import "fmt"
@@ -7,6 +8,15 @@ func main() {
 	a := []int{1, 3, 4}
 	b := []int{2, 5, 6}
 	fmt.Println(merge(a, b, c))
+
+	x := []int{1, 5, 2, 6, 4, 6, 8, 3}
+	fmt.Println(split(x))
+}
+
+// Split returns two slice, halving the input slice.
+func split(x []int) ([]int, []int) {
+	mid := len(x) / 2
+	return x[:mid], x[mid:]
 }
 
 // Merge, assume the two lists are sorted.
