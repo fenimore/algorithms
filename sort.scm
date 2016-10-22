@@ -25,13 +25,6 @@
    ;;(define first-a (car a)) ;; first a
    ;;(define first-b (car b)) ;; first b
    ;; Add the lowest to c list
-   "(define z
-     (append c
-             (cond
-              ((> (car a) (car b))(car b))
-              ((< (car a) (car b))(car a))
-              )))"
-
    (let* (
           [z
            (append c
@@ -58,13 +51,16 @@
      ;; pass in x for the popped list
      ;; Emptiness is true if the poped list is empy
      ;;(display '(x y z))
-     ;;(display z)
+     (display (list? z))
+     (display x)
+     (display y)
+     (newline)
+     (newline)
      (if
       (null? x)
-      (append (list z) y)
+      (append z y)
       (merge x y (list z))
       )
-     ;;(list x y z)
      )
    )
 
@@ -73,7 +69,7 @@
 
 ;;(display (split '(1 5 4 2)))
 ;;(merge (list 1 2 3) (list 6 5 4) '())
-(merge '(1 5 7) '(4 6 8) '())
+(merge '(1 5 7 11) '(4 6 8 10) '())
 
 
 
