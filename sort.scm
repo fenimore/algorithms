@@ -11,13 +11,12 @@
   (define mididx
     (if
      (odd? (length x))
-     ("Doesn't work on odd lists")  ;;((/ (- (length x) 1) 2))
+     (/ (- (length x) 1) 2)
      (/ (length x) 2))
     )
   ;; Get first and second half of list
   (list (take x  mididx) (drop x mididx))
   )
-
 
 
 (define (merge a b c)
@@ -27,12 +26,13 @@
    ;; Add the lowest to c list
    (let* (
           [z
-           (append c
-                   (cond
-                    ((> (car a) (car b))(car b))
-                    ((< (car a) (car b))(car a))
-                    )
-                   )]
+           (append c ;; append takes list
+                   (list
+                    (cond
+                     ((> (car a) (car b))(car b))
+                     ((< (car a) (car b))(car a))
+                     )
+                    ))]
           ;; Pop the item off such a list
           ;; x is the popped list
           [x
@@ -51,26 +51,35 @@
      ;; pass in x for the popped list
      ;; Emptiness is true if the poped list is empy
      ;;(display '(x y z))
-     (display (list? z))
-     (display x)
-     (display y)
-     (newline)
-     (newline)
      (if
       (null? x)
       (append z y)
-      (merge x y (list z))
+      (merge x y z)
       )
      )
    )
 
+(define (merge-sort lst)
+  (if
+   (> (length lst) 1)
+   (merge
+    (merge-sort (list-ref (split lst) 0))
+    (merge-sort (list-ref (split lst) 1))
+    '())
+   (if
+     (< (length lst) 2)
+     (lst)
+     (merge (list-ref (split lst) 0) (list-ref (split lst) 1) '())
+     )
+    )
+ )
 
 
-
-;;(display (split '(1 5 4 2)))
-;;(merge (list 1 2 3) (list 6 5 4) '())
-(merge '(1 5 7 11) '(4 6 8 10) '())
-
+;;(split '(1 5 4 2 4)) ;; even
+;; (split '(1 5 4 2)) ;; even
+;;(merge '(1 5 7 11) '(4 6 8 10) '())
+(merge-sort '(1 5 4 9 14 10 8 10))
+;;(merge '(1) '() '()))
 
 
 (newline)
