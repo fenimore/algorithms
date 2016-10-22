@@ -21,25 +21,56 @@
 
 (define (merge a b c)
   "Merge merges two already sorted list"
-  (append c (list
-  (cond
-   ((< (car a) (car b)) (car a))
-   ((< (car b) (car a)) (car b));;(append c (list (car a)))
+  (define first-a (car a)) ;; first a
+  (define first-b (car b)) ;; first b
+
+  ;; Add the lowest to c list
+  (define z
+    (append c
+            ((cond
+              ((> first-a first-b)(first-b))
+              ((< first-a first-b)(first-a))
+              )
+             )
+            )
+    )
+  ;; Pop the item off such a list
+  ;; x is the popped list
+  (define x
+    (
+     (cond
+      ((> first-a first-b)(drop b 0))
+      ((< first-a first-b)(drop a 0))
+      )
+     )
+    )
+
+  ;; The list not popped
+  (define y
+    (
+     (cond
+      ((> first-a first-b)(a))
+      ((< first-a first-b)(b))
+      )
+     )
+    )
+
+  ;; Call merge if the lists are not 0
+  ;; pass in x for the popped list
+  ;; Emptiness is true if the poped list is empy
+  (if
+   (null? x)
+   (append z y)
+   (merge x y z)
    )
-  ))
-  (define x "a")
-  (define y "b")
-  (c)
   )
 
 
-;
-(display (split '(1 5 4 2)))
-;;(display (merge (list 1 2 3) (list 6 5 4) '()))
-;; I can do (list n n n) or literal: `(n n n)
 
-;;(display (merge `(1 2 3) `(6 5 4)
-(merge (list 1 2 3) (list 6 5 4) '())
+
+;;(display (split '(1 5 4 2)))
+;;(merge (list 1 2 3) (list 6 5 4) '())
+(merge ('(1 2 3)) ('(6 5 4)) '())
 
 
 
