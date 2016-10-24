@@ -1,4 +1,5 @@
 // Represent a tree
+// The trick is to give some sort of unique name to each node
 package trees
 
 import "fmt"
