@@ -1,8 +1,8 @@
 #lang racket
-(newline)
-
-
 ;; merge sort
+;; TODO: If duplicate numbers
+;; TODO: doesn't work of zeros
+;; TODO: doesn't work with odd lists
 
 ;; Split
 (define (split x) ;; split is a function of one arg
@@ -17,7 +17,7 @@
   (list (take x  mididx) (drop x mididx))
   )
 
-
+;; merge
 (define (merge a b c)
    "Merge merges two already sorted list"
    ;;(define first-a (car a)) ;; first a
@@ -71,6 +71,8 @@
    )
 
 (define (merge-sort lst)
+  "Merge Sort Merges sorted lists, if list is smaller than 2
+   it just returns that list"
   (if
    (< (length lst) 2)
    (car lst)
@@ -82,11 +84,14 @@
 
   )
 
-;;(split '(1 5 4 2 4)) ;; even
-;; (split '(1 5 4 2)) ;; even
-;;(merge '(1 5 7 11) '(4 6 8 10) '())
+(display "sort: ")
+(display '(2 5 4 9 14 10 8 11))
+(newline)
 (merge-sort '(2 5 4 9 14 10 8 11))
-;;(merge '(1) '() '()))
+;; TODO: doesn't work
+;;(display "sort: ")
+;;(display '(44 6 99 4 5 14 1 8 66 3))
+;;(merge-sort '(44 6 99 4 5 14 1 8 66 3))
 
 
 (newline)
