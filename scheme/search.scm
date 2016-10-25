@@ -9,27 +9,23 @@
     (if
      (odd? (length x))
      (/ (- (length x) 1) 2)
-     (/ (length x) 2))
-    )
+     (/ (length x) 2)))
   ;; Get first and second half of list
-  (list (take x  mididx) (drop x mididx))
-  )
+  (list (take x  mididx) (drop x mididx)))
 
 (define (binary-search lst target)
-  (newline)
+  "Binary Search for index of target number"
+  ;; TODO: If number outside of range, fail
   (define mididx
     (if
      (odd? (length lst))
      (/ (- (length lst) 1) 2)
-     (/ (length lst) 2))
-    )
-  (display (split lst))
+     (/ (length lst) 2)))
   (cond
    ((= (list-ref lst mididx) target) mididx)
+   ((= (length lst) 1) "Item Not Found")
    ((< target (list-ref lst mididx)) (binary-search (car (split lst)) target))
-   ((> target (list-ref lst mididx)) (binary-search (cdr (split lst)) target))
-   )
-  )
+   ((> target (list-ref lst mididx)) (binary-search (cdr (split lst)) target))))
 
 
-(binary-search sorted-list 5)
+(binary-search sorted-list 15)
