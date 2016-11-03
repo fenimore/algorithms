@@ -61,8 +61,8 @@ def merge(a, b):
 def divide(array):
     """Divides an array into a list of two lists
     where the input is cut in half"""
-    a = array[:int(len(array)/2)]
-    b = array[int(len(array)/2):]
+    a = array[:len(array)//2]
+    b = array[len(array)//2:]
     return [a, b]
 
 def merge_sort(array):
@@ -90,9 +90,16 @@ def find_pivot(array):
 
     return array
 
+def quicksort(array, pivot):
+    pivot = find_pivot(array)
+
+    quicksort(divide(array)[0], pivot)
+    quicksort(divide(array)[1], pivot)
+    return array
+
 
 if __name__ == "__main__":
     print("Test Subject 1", test_list)
     print(love_sort(test_list))
     print("Merge")
-print(merge_sort(test_list))
+    print(merge_sort(test_list))
