@@ -106,6 +106,29 @@ func CycleByte(cipher []byte) []byte {
 	return cipher
 }
 
+var KEYSIZE = 2 // to forty
+
+// HammingDistance the number of differing bits
+// in two equal length byte slices.
+func HammingDistance(a, b []byte) (int, error) {
+	if len(a) != len(b) {
+		return 0, errors.New("Slices are not the same length")
+	}
+	var count int
+	for i := range a {
+		for j := 0; j < 8; j++ {
+			differing := (((a[i] >> uint(j)) & 1) == ((b[i] >> uint(j)) & 1))
+			if !differing {
+				count++
+			}
+		}
+	}
+
+	return count, nil
+}
+
+/* Challenges Set One*/
+
 var (
 	input    string
 	result   []byte
@@ -209,4 +232,8 @@ I go crazy when I hear a cymbal`
 	} else {
 		fmt.Println("Challenge Five Success")
 	}
+
+	// Challenge 6
+	count, _ := HammingDistance([]byte("this is a test"), []byte("wokka wokka!!!"))
+	fmt.Println(count)
 }
