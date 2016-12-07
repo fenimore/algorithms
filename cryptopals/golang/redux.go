@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"sort"
 )
@@ -234,5 +235,19 @@ I go crazy when I hear a cymbal`
 	}
 
 	// Challenge 6
+	file, err = os.Open("inputs/challenge_6.txt")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer file.Close()
+
+	crypto, err := ioutil.ReadAll(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// Decode from the base64 encoding NOTE: ?
+	result = make([]byte, base64.StdEncoding.DecodedLen(len(crypto)))
+	_, _ = base64.StdEncoding.Decode(result, crypto)
+	fmt.Println(len(result))
 
 }
