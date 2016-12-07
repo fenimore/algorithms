@@ -234,6 +234,5 @@ I go crazy when I hear a cymbal`
 	}
 
 	// Challenge 6
-	count, _ := HammingDistance([]byte("this is a test"), []byte("wokka wokka!!!"))
-	fmt.Println(count)
+
 }
