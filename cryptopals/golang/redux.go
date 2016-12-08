@@ -107,8 +107,6 @@ func CycleByte(cipher []byte) []byte {
 	return cipher
 }
 
-var KEYSIZE = 2 // to forty
-
 // HammingDistance the number of differing bits
 // in two equal length byte slices.
 func HammingDistance(a, b []byte) (int, error) {
@@ -136,6 +134,7 @@ var (
 	expected string
 	err      error
 	messages Messages
+	decoded  []byte
 )
 
 func main() {
@@ -171,19 +170,20 @@ func main() {
 
 	// Challenge Three
 	input = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-	for _, val := range LETTERS {
-		result, err = SingleByteCipher([]byte(input), val)
+	for i := 0; i < 256; i++ {
+
+		result, err = SingleByteCipher([]byte(input), byte(i))
 		if err != nil {
 			fmt.Println(err)
 		}
 		messages = append(messages, Message{
 			Phrase: result,
-			Cipher: val,
+			Cipher: byte(i),
 			Score:  EvaluatePhrase(string(result)),
 		})
 	}
 	sort.Sort(MesSort(messages))
-	if "Cooking MC's like a pound of bacon" != string(messages[len(messages)-1].Phrase) {
+	if "Cooking MC's like a pound of bacon" != string(messages[0].Phrase) {
 		fmt.Println("Challenge Three Failed")
 	} else {
 		fmt.Println("Challenge Three Succeeded")
@@ -192,7 +192,7 @@ func main() {
 	// Challenge Four
 	messages = nil
 	messages = make(Messages, 0)
-	var hashes []string
+	hashes := make([][]byte, 0)
 	file, err := os.Open("inputs/challenge_4.txt")
 	if err != nil {
 		fmt.Println(err)
@@ -201,25 +201,36 @@ func main() {
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() { // Scan by line
-		hashes = append(hashes, scanner.Text())
+		hashes = append(hashes, []byte(scanner.Text()))
 	}
 	file.Close()
 
 	for _, val := range hashes {
-		for _, letter := range LETTERS {
-			result, err = SingleByteCipher([]byte(val), letter)
+		msgs := Messages{}
+		for i := 0; i < 256; i++ {
+			result, err = SingleByteCipher(val, byte(i))
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println(err, "Result")
+				fmt.Println(string(val))
+				break
 			}
-			messages = append(messages, Message{
+			//messages = append(messages, Message{
+			msgs = append(msgs, Message{
 				Phrase: result,
-				Cipher: letter,
+				Cipher: byte(i),
 				Score:  EvaluatePhrase(string(result)),
 			})
 		}
+		sort.Sort(MesSort(msgs))
+		messages = append(messages, msgs[0])
 	}
-
-	fmt.Println("Challenge Four Failure")
+	sort.Sort(MesSort(messages))
+	if string(messages[0].Phrase) != "Now that the party is jumping\n" {
+		fmt.Println(string(messages[0].Phrase))
+		fmt.Println("Challenge Four Failure")
+	} else {
+		fmt.Println("Challenge Four Succeeds")
+	}
 
 	// Challenge 5
 	input = `Burning 'em, if you ain't quick and nimble
