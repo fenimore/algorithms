@@ -69,15 +69,26 @@ func XORHex(a, b []byte) ([]byte, error) {
 	return result, nil
 }
 
-// SingleByteCipher checks a single char cipher against
+// SingleByteCipherOfHex checks a single char cipher against
 // a hex.
-func SingleByteCipher(h []byte, cipher byte) ([]byte, error) {
+func SingleByteCipherOfHex(h []byte, cipher byte) ([]byte, error) {
 	data := make([]byte, hex.DecodedLen(len(h)))
 	_, err := hex.Decode(data, h)
 	if err != nil {
 		return nil, err
 	}
 
+	result := make([]byte, len(data))
+	for i := range data {
+		result[i] = data[i] ^ cipher
+	}
+
+	return result, nil
+}
+
+// SingleByteCipher checks a single char cipher against
+// a hex.
+func SingleByteCipher(data []byte, cipher byte) ([]byte, error) {
 	result := make([]byte, len(data))
 	for i := range data {
 		result[i] = data[i] ^ cipher
@@ -107,6 +118,29 @@ func CycleByte(cipher []byte) []byte {
 	return cipher
 }
 
+func FindRepeatingKey(crypto [][]byte) []byte {
+	key := make([]byte, 0)
+	for _, val := range crypto {
+		msgs := make(Messages, 0)
+		for i := 0; i < 256; i++ {
+			result, err = SingleByteCipher(val, byte(i))
+			if err != nil {
+				fmt.Println(string(val))
+			}
+			msgs = append(msgs, Message{
+				Phrase: result,
+				Cipher: byte(i),
+				Score:  EvaluatePhrase(string(result)),
+			})
+		}
+		sort.Sort(MesSort(msgs))
+		messages = append(messages, msgs[0])
+		key = append(key, msgs[0].Cipher)
+	}
+	return key
+
+}
+
 // HammingDistance the number of differing bits
 // in two equal length byte slices.
 func HammingDistance(a, b []byte) (int, error) {
@@ -126,6 +160,60 @@ func HammingDistance(a, b []byte) (int, error) {
 	return count, nil
 }
 
+// SmallestDistance returns the keysize
+// for the smallest distance.
+func SmallestDistance(buffer []byte) (int, error) {
+	var keysize int
+	smallDistance := 10000000
+	var smallKey int
+	for keysize = 2; keysize < 41; keysize++ {
+		a := buffer[:keysize]
+		b := buffer[keysize : keysize*2]
+		n, err := HammingDistance(a, b)
+		if err != nil {
+			return 0, err
+		}
+
+		if n/keysize < smallDistance {
+			smallDistance = n / keysize
+			smallKey = keysize
+		}
+
+	}
+
+	return smallKey, nil
+}
+
+// TransposeCipher transposes a cipher text into keysize blocks.
+func TransposeCipher(buffer []byte, keysize int) [][]byte {
+	ciphers := make([][]byte, 0)
+	for i := 0; i < len(buffer); i += keysize {
+		ciphers = append(ciphers, buffer[i:i+keysize])
+	}
+
+	blocks := make([][]byte, len(buffer)/len(ciphers))
+	for idx := range blocks {
+		blocks[idx] = make([]byte, len(buffer)/keysize)
+	}
+
+	for i := 0; i < keysize; i++ {
+		for cipher := range ciphers {
+			blocks[i][cipher] = ciphers[cipher][i]
+		}
+	}
+
+	return blocks
+}
+
+func DecryptXOR(message, cipher []byte) []byte {
+	data := make([]byte, len(message))
+	for i := range data {
+		data[i] = message[i] ^ cipher[0]
+		cipher = CycleByte(cipher)
+	}
+	return data
+}
+
 /* Challenges Set One*/
 
 var (
@@ -138,7 +226,7 @@ var (
 )
 
 func main() {
-	// Challenge One
+	// Challenge 1 ################################################################
 	input = "49276d206b696c6c696e6720796f757220627261696e206c"
 	input += "696b65206120706f69736f6e6f7573206d757368726f6f6d"
 	expected = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
@@ -152,7 +240,7 @@ func main() {
 		fmt.Println("Challenge one Succeeds")
 	}
 
-	// Challenge Two
+	// Challenge 2 ################################################################
 	input1 := "1c0111001f010100061a024b53535009181c"
 	input2 := "686974207468652062756c6c277320657965"
 	expected = "746865206b696420646f6e277420706c6179"
@@ -168,11 +256,11 @@ func main() {
 		fmt.Println("Challenge Two Succeeded")
 	}
 
-	// Challenge Three
+	// Challenge 3 ################################################################
 	input = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
 	for i := 0; i < 256; i++ {
 
-		result, err = SingleByteCipher([]byte(input), byte(i))
+		result, err = SingleByteCipherOfHex([]byte(input), byte(i))
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -189,7 +277,7 @@ func main() {
 		fmt.Println("Challenge Three Succeeded")
 	}
 
-	// Challenge Four
+	// Challenge 4 ################################################################
 	messages = nil
 	messages = make(Messages, 0)
 	hashes := make([][]byte, 0)
@@ -208,7 +296,7 @@ func main() {
 	for _, val := range hashes {
 		msgs := Messages{}
 		for i := 0; i < 256; i++ {
-			result, err = SingleByteCipher(val, byte(i))
+			result, err = SingleByteCipherOfHex(val, byte(i))
 			if err != nil {
 				fmt.Println(err, "Result")
 				fmt.Println(string(val))
@@ -232,7 +320,7 @@ func main() {
 		fmt.Println("Challenge Four Succeeds")
 	}
 
-	// Challenge 5
+	// Challenge 5 ################################################################
 	input = `Burning 'em, if you ain't quick and nimble
 I go crazy when I hear a cymbal`
 	result = EncryptXOR([]byte(input), []byte("ICE"))
@@ -245,7 +333,7 @@ I go crazy when I hear a cymbal`
 		fmt.Println("Challenge Five Success")
 	}
 
-	// Challenge 6
+	// Challenge 6 ################################################################
 	file, err = os.Open("inputs/challenge_6.txt")
 	if err != nil {
 		fmt.Println(err)
@@ -256,9 +344,24 @@ I go crazy when I hear a cymbal`
 	if err != nil {
 		fmt.Println(err)
 	}
-	// Decode from the base64 encoding NOTE: ?
 	result = make([]byte, base64.StdEncoding.DecodedLen(len(crypto)))
-	_, _ = base64.StdEncoding.Decode(result, crypto)
-	fmt.Println(len(result))
+	_, err = base64.StdEncoding.Decode(result, crypto)
+	//sDec, _ := base64.StdEncoding.DecodeString(string(crypto))
+	// NOTE: decodedLen is longer than n
+	if err != nil {
+		fmt.Println(err)
+	}
+	keysize, err := SmallestDistance(result)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	blocks := TransposeCipher(result, keysize)
+	fmt.Println("Result")
+
+	key := FindRepeatingKey(blocks)
+	fmt.Println(string(key))
+	msg := DecryptXOR(result, key)
+	fmt.Println(string(msg))
 
 }
