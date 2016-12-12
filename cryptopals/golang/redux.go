@@ -118,6 +118,7 @@ func CycleByte(cipher []byte) []byte {
 	return cipher
 }
 
+// FindRepeatingKey needed for challenge size
 func FindRepeatingKey(crypto [][]byte) []byte {
 	key := make([]byte, 0)
 	for _, val := range crypto {
@@ -160,28 +161,53 @@ func HammingDistance(a, b []byte) (int, error) {
 	return count, nil
 }
 
-// SmallestDistance returns the keysize
-// for the smallest distance.
-func SmallestDistance(buffer []byte) (int, error) {
-	var keysize int
-	smallDistance := 10000000
-	var smallKey int
-	for keysize = 2; keysize < 41; keysize++ {
+// GetDistances returns a map of keysize to normalized distances
+func GetDistances(buffer []byte) (map[int]int, error) {
+	// Distances =>
+	// Key is keysize
+	// Val is distance normalized
+	distances := make(map[int]int)
+
+	for keysize := 2; keysize < 41; keysize++ {
+		// Four blocks
 		a := buffer[:keysize]
 		b := buffer[keysize : keysize*2]
-		n, err := HammingDistance(a, b)
+		c := buffer[keysize*2 : keysize*3]
+		d := buffer[keysize*3 : keysize*4]
+		n1, err := HammingDistance(a, b)
 		if err != nil {
-			return 0, err
+			return nil, err
 		}
 
-		if n/keysize < smallDistance {
-			smallDistance = n / keysize
-			smallKey = keysize
+		n2, err := HammingDistance(b, c)
+		if err != nil {
+			return nil, err
 		}
 
+		n3, err := HammingDistance(c, d)
+		if err != nil {
+			return nil, err
+		}
+
+		// Normalize Hamming Distance
+		n := (n1 + n2 + n3) / 3
+
+		distances[keysize] = n / keysize
 	}
 
-	return smallKey, nil
+	return distances, nil
+}
+
+func GetKeySizes(distances map[int]int) []int {
+	var min = 1000
+	keysizes := make([]int, 0)
+	for keysize, distance := range distances {
+		if distance <= min {
+			min = distance
+			keysizes = append(keysizes, keysize)
+		}
+	}
+	return keysizes
 }
 
 // TransposeCipher transposes a cipher text into keysize blocks.
@@ -351,17 +377,18 @@ I go crazy when I hear a cymbal`
 	if err != nil {
 		fmt.Println(err)
 	}
-	keysize, err := SmallestDistance(result)
+	distances, err := GetDistances(result) // possible keysizes
 	if err != nil {
 		fmt.Println(err)
 	}
+	possibleKeysize := GetKeySizes(distances)
 
-	blocks := TransposeCipher(result, keysize)
-	fmt.Println("Result")
+	//blocks := TransposeCipher(result, keysize)
+	//fmt.Println("Result")
 
-	key := FindRepeatingKey(blocks)
-	fmt.Println(string(key))
-	msg := DecryptXOR(result, key)
-	fmt.Println(string(msg))
+	//key := FindRepeatingKey(blocks)
+	//fmt.Println(string(key))
+	//msg := DecryptXOR(result, key)
+	//fmt.Println(string(msg))
 
 }
