@@ -141,9 +141,7 @@ func FindRepeatingKey(crypto [][]byte) []byte {
 		messages = append(messages, msgs[0])
 		key = append(key, msgs[0].Cipher)
 	}
-	fmt.Println(string(key[:4]))
 	return key
-
 }
 
 // HammingDistance the number of differing bits
@@ -202,6 +200,7 @@ func GetDistances(buffer []byte) (map[int]int, error) {
 	return distances, nil
 }
 
+// TODO: This doesn't really work all the time :S
 func GetKeySizes(distances map[int]int) []int {
 	var min = 1000
 	keysizes := make([]int, 0)
@@ -216,19 +215,28 @@ func GetKeySizes(distances map[int]int) []int {
 
 // TransposeCipher transposes a cipher text into keysize blocks.
 func TransposeCipher(buffer []byte, keysize int) [][]byte {
-	fmt.Println(keysize)
 	ciphers := make([][]byte, 0)
 	for i := 0; i < len(buffer); i += keysize {
-		if len(buffer) > i+keysize {
-			continue
+		if len(buffer) < i+keysize {
+			// If keysize doesn't divide into buffer correctly
+			paddedBuffer := make([]byte, keysize)
+			copy(paddedBuffer[:len(buffer[i:])], buffer[i:])
+			ciphers = append(ciphers, paddedBuffer)
+			break
 		}
 		ciphers = append(ciphers, buffer[i:i+keysize])
 	}
 
-	blocks := make([][]byte, len(buffer)/len(ciphers))
-	for idx := range blocks {
-		blocks[idx] = make([]byte, len(buffer)/keysize)
+	blockLength := len(buffer) / keysize
+	if len(buffer)%keysize != 0 {
+		blockLength += 1
 	}
+
+	blocks := make([][]byte, keysize) //len(buffer)/len(ciphers))
+	for idx := range blocks {
+		blocks[idx] = make([]byte, blockLength) //len(buffer)/keysize)
+	}
+	fmt.Println(len(blocks), len(ciphers))
 
 	for i := 0; i < keysize; i++ {
 		for cipher := range ciphers {
@@ -388,28 +396,30 @@ I go crazy when I hear a cymbal`
 		fmt.Println(err)
 	}
 
-	// distances, err := GetDistances(result) // possible keysizes
-	// if err != nil {
-	//	fmt.Println(err)
-	// }
+	distances, err := GetDistances(result) // possible keysizes
+	if err != nil {
+		fmt.Println(err)
+	}
 
-	// possibleKeysize := GetKeySizes(distances)
-	// fmt.Println(possibleKeysize)
+	possibleKeys := make([][]byte, 0)
+	possibleKeysize := GetKeySizes(distances)
 
-	// for _, i := range possibleKeysize {
-	//	blocks := TransposeCipher(result, i)
-	//	fmt.Println(string(blocks[0][:4]))
-	//	//fmt.Println(string(FindRepeatingKey(blocks)))
-	//	key := FindRepeatingKey(blocks)
-	//	fmt.Println(string(key))
-	//	//fmt.Println(string(DecryptXOR(result, key)))
+	for _, i := range possibleKeysize {
+		blocks := TransposeCipher(result, i)
+		key := FindRepeatingKey(blocks)
+		possibleKeys = append(possibleKeys, key)
+	}
+	var key []byte
+	var keyScore float64
+	for _, val := range possibleKeys {
+		score := EvaluatePhrase(string(val))
+		if score > keyScore {
+			keyScore = score
+			key = val
+		}
+	}
 
-	// }
-
-	blocks := TransposeCipher(result, 29)
-	key := FindRepeatingKey(blocks)
+	msg := DecryptXOR(result, key)
+	fmt.Println(string(msg))
 	fmt.Println(string(key))
-	//msg := DecryptXOR(result, key)
-	//fmt.Println(string(msg))
-
 }
