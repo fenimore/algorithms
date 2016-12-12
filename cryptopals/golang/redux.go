@@ -122,12 +122,15 @@ func CycleByte(cipher []byte) []byte {
 func FindRepeatingKey(crypto [][]byte) []byte {
 	key := make([]byte, 0)
 	for _, val := range crypto {
-		msgs := make(Messages, 0)
+		msgs := Messages{}
 		for i := 0; i < 256; i++ {
+			// REMINDER: SingleByteCipher
+			// Will just return the xor result of single byte
 			result, err = SingleByteCipher(val, byte(i))
 			if err != nil {
 				fmt.Println(string(val))
 			}
+
 			msgs = append(msgs, Message{
 				Phrase: result,
 				Cipher: byte(i),
@@ -138,6 +141,7 @@ func FindRepeatingKey(crypto [][]byte) []byte {
 		messages = append(messages, msgs[0])
 		key = append(key, msgs[0].Cipher)
 	}
+	fmt.Println(string(key[:4]))
 	return key
 
 }
@@ -212,8 +216,12 @@ func GetKeySizes(distances map[int]int) []int {
 
 // TransposeCipher transposes a cipher text into keysize blocks.
 func TransposeCipher(buffer []byte, keysize int) [][]byte {
+	fmt.Println(keysize)
 	ciphers := make([][]byte, 0)
 	for i := 0; i < len(buffer); i += keysize {
+		if len(buffer) > i+keysize {
+			continue
+		}
 		ciphers = append(ciphers, buffer[i:i+keysize])
 	}
 
@@ -370,24 +378,37 @@ I go crazy when I hear a cymbal`
 	if err != nil {
 		fmt.Println(err)
 	}
-	result = make([]byte, base64.StdEncoding.DecodedLen(len(crypto)))
-	_, err = base64.StdEncoding.Decode(result, crypto)
-	//sDec, _ := base64.StdEncoding.DecodeString(string(crypto))
+	//result = make([]byte, base64.StdEncoding.DecodedLen(len(crypto)))
+	//fmt.Println(len(crypto))
+	//decodedLen, err := base64.StdEncoding.Decode(result, crypto)
 	// NOTE: decodedLen is longer than n
+	// THUS: decode from string LAME:
+	result, err := base64.StdEncoding.DecodeString(string(crypto))
 	if err != nil {
 		fmt.Println(err)
 	}
-	distances, err := GetDistances(result) // possible keysizes
-	if err != nil {
-		fmt.Println(err)
-	}
-	possibleKeysize := GetKeySizes(distances)
 
-	//blocks := TransposeCipher(result, keysize)
-	//fmt.Println("Result")
+	// distances, err := GetDistances(result) // possible keysizes
+	// if err != nil {
+	//	fmt.Println(err)
+	// }
 
-	//key := FindRepeatingKey(blocks)
-	//fmt.Println(string(key))
+	// possibleKeysize := GetKeySizes(distances)
+	// fmt.Println(possibleKeysize)
+
+	// for _, i := range possibleKeysize {
+	//	blocks := TransposeCipher(result, i)
+	//	fmt.Println(string(blocks[0][:4]))
+	//	//fmt.Println(string(FindRepeatingKey(blocks)))
+	//	key := FindRepeatingKey(blocks)
+	//	fmt.Println(string(key))
+	//	//fmt.Println(string(DecryptXOR(result, key)))
+
+	// }
+
+	blocks := TransposeCipher(result, 29)
+	key := FindRepeatingKey(blocks)
+	fmt.Println(string(key))
 	//msg := DecryptXOR(result, key)
 	//fmt.Println(string(msg))
 

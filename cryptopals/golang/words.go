@@ -65,3 +65,27 @@ func EvaluatePhrase(phrase string) float64 {
 
 	return score
 }
+
+func GetFrequencies(phrase string) float64 {
+	frequencies := make(map[string]float64)
+	var score float64
+	phrase = strings.ToUpper(phrase)u
+
+	for _, char := range phrase {
+		if val, ok := frequencies[string(char)]; ok {
+			frequencies += 1
+		} else {
+			frequencies[string(char)] = 1
+		}
+	}
+	return frequencies
+}
+
+func EvaluateFrequencies(phrase string) {
+	// freq := GetFrequencies(phrase)
+	// var count int
+	// var num int
+	// for _, char range := LETTER_FREQUENCY {
+	//	if
+	// }
+}
