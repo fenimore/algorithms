@@ -256,6 +256,20 @@ func DecryptXOR(message, cipher []byte) []byte {
 	return data
 }
 
+func DecryptECB(key, ciphertext []byte) []byte {
+	plaintext := make([]byte, len(ciphertext))
+	cipher, err := aes.NewCipher(key)
+	size := cipher.BlockSize()
+	if err != nil {
+		fmt.Println(err)
+	}
+	for i := 0; i*size < len(ciphertext); i++ {
+		cipher.Decrypt(plaintext[i*size:size*(i+1)], ciphertext[i*size:size*(i+1)])
+		fmt.Println(string(plaintext[i*size : size*(i+1)]))
+	}
+	return plaintext
+}
+
 /* Challenges Set One*/
 
 var (
@@ -430,7 +444,6 @@ I go crazy when I hear a cymbal`
 	}
 
 	// Challenge 7 ################################################################
-	//ciphers := make([]string, 0)
 	key = []byte("YELLOW SUBMARINE")
 	file, err = os.Open("inputs/challenge_7.txt")
 	if err != nil {
@@ -441,23 +454,61 @@ I go crazy when I hear a cymbal`
 	if err != nil {
 		fmt.Println(err)
 	}
-	ciphertext, err := base64.StdEncoding.DecodeString(string(data))
+	_, err = base64.StdEncoding.DecodeString(string(data))
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(string(DecryptECB(key, ciphertext)))
+
+	//fmt.Println(string(DecryptECB(key, ciphertext)))
+
+	// Challenge 8 ################################################################
+	var ciphers = make([][]byte, 0)
+	file, err = os.Open("inputs/challenge_8.txt")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer file.Close()
+
+	scanner = bufio.NewScanner(file)
+	for scanner.Scan() { // Scan by line
+		data, err = hex.DecodeString(scanner.Text())
+		if err != nil {
+			fmt.Println(err)
+		}
+		ciphers = append(ciphers, data)
+	}
+	file.Close()
+
+	for _, cipher := range ciphers {
+		DetectECB(cipher)
+	}
+
+	// ciphers := make(map[[16]byte]bool)
+
+	// for i := 0; i+16 < len(ciphertexts); i += 16 {
+	//	var buffer [16]byte
+	//	copy(buffer[:], ciphertexts[i:i+16])
+	//	if _, ok := ciphers[buffer]; ok {
+	//		fmt.Println(buffer)
+	//		ciphers[buffer] = true // is duplicate
+	//	} else {
+	//		ciphers[buffer] = false
+	//	}
+	// }
+	// fmt.Println(ciphers)
+
 }
 
-func DecryptECB(key, ciphertext []byte) []byte {
-	plaintext := make([]byte, len(ciphertext))
-	cipher, err := aes.NewCipher(key)
-	size := cipher.BlockSize()
-	if err != nil {
-		fmt.Println(err)
+func DetectECB(text []byte) {
+	repeats := make(map[[16]byte]bool)
+	for i := 0; i+16 < len(text); i += 16 {
+		var data [16]byte
+		copy(data[:], text[i:i+16])
+		if ok, _ := repeats[data]; ok {
+			fmt.Println("Repeates")
+			repeats[data] = true
+		} else {
+			repeats[data] = false
+		}
 	}
-	for i := 0; i*size < len(ciphertext); i++ {
-		cipher.Decrypt(plaintext[i*size:size*(i+1)], ciphertext[i*size:size*(i+1)])
-		fmt.Println(string(plaintext[i*size : size*(i+1)]))
-	}
-	return plaintext
 }
