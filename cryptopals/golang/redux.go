@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"crypto/aes"
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
@@ -200,7 +201,7 @@ func GetDistances(buffer []byte) (map[int]int, error) {
 	return distances, nil
 }
 
-// TODO: This doesn't really work all the time :S
+// FIXME: This doesn't really work all the time :S
 func GetKeySizes(distances map[int]int) []int {
 	var min = 1000
 	keysizes := make([]int, 0)
@@ -236,7 +237,6 @@ func TransposeCipher(buffer []byte, keysize int) [][]byte {
 	for idx := range blocks {
 		blocks[idx] = make([]byte, blockLength) //len(buffer)/keysize)
 	}
-	fmt.Println(len(blocks), len(ciphers))
 
 	for i := 0; i < keysize; i++ {
 		for cipher := range ciphers {
@@ -419,7 +419,45 @@ I go crazy when I hear a cymbal`
 		}
 	}
 
-	msg := DecryptXOR(result, key)
-	fmt.Println(string(msg))
-	fmt.Println(string(key))
+	_ = DecryptXOR(result, key)
+	expected = "Terminator X: Bring the noise"
+	if string(key) != string(expected) {
+		fmt.Println("Failure challenge six")
+		// FIXME: sometimes this breaks because of how the GetKeySizes works
+		fmt.Println(string(key))
+	} else {
+		fmt.Println("Challenge Six success")
+	}
+
+	// Challenge 7 ################################################################
+	//ciphers := make([]string, 0)
+	key = []byte("YELLOW SUBMARINE")
+	file, err = os.Open("inputs/challenge_7.txt")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer file.Close()
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	ciphertext, err := base64.StdEncoding.DecodeString(string(data))
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(DecryptECB(key, ciphertext)))
+}
+
+func DecryptECB(key, ciphertext []byte) []byte {
+	plaintext := make([]byte, len(ciphertext))
+	cipher, err := aes.NewCipher(key)
+	size := cipher.BlockSize()
+	if err != nil {
+		fmt.Println(err)
+	}
+	for i := 0; i*size < len(ciphertext); i++ {
+		cipher.Decrypt(plaintext[i*size:size*(i+1)], ciphertext[i*size:size*(i+1)])
+		fmt.Println(string(plaintext[i*size : size*(i+1)]))
+	}
+	return plaintext
 }
