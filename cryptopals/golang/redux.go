@@ -454,12 +454,12 @@ I go crazy when I hear a cymbal`
 	if err != nil {
 		fmt.Println(err)
 	}
-	_, err = base64.StdEncoding.DecodeString(string(data))
+	ciphertext, err := base64.StdEncoding.DecodeString(string(data))
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	//fmt.Println(string(DecryptECB(key, ciphertext)))
+	fmt.Println(string(DecryptECB(key, ciphertext)))
 
 	// Challenge 8 ################################################################
 	var ciphers = make([][]byte, 0)
@@ -480,32 +480,22 @@ I go crazy when I hear a cymbal`
 	file.Close()
 
 	for _, cipher := range ciphers {
-		DetectECB(cipher)
+		if DetectECB(cipher) {
+			result = cipher
+			break
+		}
 	}
 
-	// ciphers := make(map[[16]byte]bool)
-
-	// for i := 0; i+16 < len(ciphertexts); i += 16 {
-	//	var buffer [16]byte
-	//	copy(buffer[:], ciphertexts[i:i+16])
-	//	if _, ok := ciphers[buffer]; ok {
-	//		fmt.Println(buffer)
-	//		ciphers[buffer] = true // is duplicate
-	//	} else {
-	//		ciphers[buffer] = false
-	//	}
-	// }
-	// fmt.Println(ciphers)
-
+	fmt.Println(string(result))
 }
 
-func DetectECB(text []byte) {
-	repeats := make(map[[16]byte]int)
+func DetectECB(text []byte) bool {
+	repeats := make(map[string]bool)
 	for i := 0; i < 10; i++ {
-		var data [16]byte
-		copy(data[:], text[i*16:i*16+16])
-		fmt.Println(repeats[data])
-		repeats[data]++
-		fmt.Println(repeats[data])
+		if repeats[string(text[i*16:i*16+16])] {
+			return true
+		}
+		repeats[string(text[i*16:i*16+16])] = true
 	}
+	return false
 }
