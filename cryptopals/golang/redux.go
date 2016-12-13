@@ -500,15 +500,12 @@ I go crazy when I hear a cymbal`
 }
 
 func DetectECB(text []byte) {
-	repeats := make(map[[16]byte]bool)
-	for i := 0; i+16 < len(text); i += 16 {
+	repeats := make(map[[16]byte]int)
+	for i := 0; i < 10; i++ {
 		var data [16]byte
-		copy(data[:], text[i:i+16])
-		if ok, _ := repeats[data]; ok {
-			fmt.Println("Repeates")
-			repeats[data] = true
-		} else {
-			repeats[data] = false
-		}
+		copy(data[:], text[i*16:i*16+16])
+		fmt.Println(repeats[data])
+		repeats[data]++
+		fmt.Println(repeats[data])
 	}
 }
