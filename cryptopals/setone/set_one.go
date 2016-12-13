@@ -265,7 +265,7 @@ func DecryptECB(key, ciphertext []byte) []byte {
 	}
 	for i := 0; i*size < len(ciphertext); i++ {
 		cipher.Decrypt(plaintext[i*size:size*(i+1)], ciphertext[i*size:size*(i+1)])
-		fmt.Println(string(plaintext[i*size : size*(i+1)]))
+		//fmt.Println(string(plaintext[i*size : size*(i+1)]))
 	}
 	return plaintext
 }
