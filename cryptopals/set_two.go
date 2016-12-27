@@ -24,6 +24,22 @@ func PadPKCS(block []byte, length int) []byte {
 	return buffer
 }
 
+// PKSPad takes in plaintext and returns the padded text.
+func PKSPad(plaintext []byte, blocksize int) []byte {
+	remainder := len(plaintext) % blocksize
+	if remainder == 0 {
+		return plaintext
+	}
+
+	// how much to pad
+	padSize := blocksize - remainder
+	padding := make([]byte, padSize)
+	for i := range padding {
+		padding[i] = byte(padSize)
+	}
+	return append(plaintext, padding...)
+}
+
 func DecryptECB(key, ciphertext []byte) []byte {
 	plaintext := make([]byte, len(ciphertext))
 	cipher, err := aes.NewCipher(key)
@@ -138,11 +154,17 @@ var (
 
 	plaintext  []byte
 	ciphertext []byte
+
+	globalkey []byte
 )
 
 func main() {
 	// challenge 9
+	// FIXME: Which version is correct?
 	fmt.Println(string(PadPKCS([]byte("YELLOW SUBMARINE"), 20)))
+	fmt.Println(PadPKCS([]byte("YELLOW SUBMARINE"), 20))
+	fmt.Println(string(PKSPad([]byte("YELLOW SUBMARINE"), 20)))
+	fmt.Println(PKSPad([]byte("YELLOW SUBMARINE"), 20))
 	// challenge 10
 	key = []byte("YELLOW SUBMARINE")
 	file, err = os.Open("inputs/challenge_10.txt")
@@ -169,5 +191,20 @@ func main() {
 	fmt.Println(string(plaintext[:10]))
 	// Challenge 11
 	fmt.Println(DetectECB(BlackBox(plaintext)))
+	// challenge 12
+	// 64 len []byte
+	plaintext = []byte("twas brillig and the slithey toves, did gyre and gimble in the w")
+	fmt.Println(len(plaintext))
+	globalkey = RandomKey(16)
+	str := "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg"
+	str += "aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq"
+	str += "dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUg"
+	str += "YnkK"
+
+	padbyte, err := base64.StdEncoding.DecodeString(str)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(padbyte[0])
 
 }
