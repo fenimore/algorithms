@@ -11,19 +11,6 @@ import (
 	"time"
 )
 
-func PadPKCS(block []byte, length int) []byte {
-	buffer := make([]byte, length)
-	if len(block) == length {
-		return block
-	}
-	copy(buffer[:len(block)], block)
-	// set last byte
-	lastByte := byte(length - len(block))
-	buffer[len(buffer)-1] = lastByte
-
-	return buffer
-}
-
 // PKSPad takes in plaintext and returns the padded text.
 func PKSPad(plaintext []byte, blocksize int) []byte {
 	remainder := len(plaintext) % blocksize
@@ -37,6 +24,7 @@ func PKSPad(plaintext []byte, blocksize int) []byte {
 	for i := range padding {
 		padding[i] = byte(padSize)
 	}
+
 	return append(plaintext, padding...)
 }
 
@@ -49,7 +37,6 @@ func DecryptECB(key, ciphertext []byte) []byte {
 	}
 	for i := 0; i*size < len(ciphertext); i++ {
 		cipher.Decrypt(plaintext[i*size:size*(i+1)], ciphertext[i*size:size*(i+1)])
-		//fmt.Println(string(plaintext[i*size : size*(i+1)]))
 	}
 	return plaintext
 }
@@ -64,7 +51,6 @@ func EncryptECB(key, plaintext []byte) []byte {
 
 	for i := 0; i*size < len(plaintext); i++ {
 		cipher.Encrypt(ciphertext[i*size:size*(i+1)], plaintext[i*size:size*(i+1)])
-		//fmt.Println(ciphertext[i*size:size*i+1], plaintext[i*size:size*i+1])
 	}
 
 	return ciphertext
@@ -97,11 +83,7 @@ func RandomKey(size int) []byte {
 	seed := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(seed)
 	result := make([]byte, size)
-	for i := 0; i < size; i++ { // func EncryptCBC(key, plaintext []byte) []byte {
-		//	ciphertext := make([]byte, len(plaintext))
-		//	return ciphertext
-		// }
-
+	for i := 0; i < size; i++ {
 		result[i] = byte(r.Intn(256))
 	}
 
@@ -111,22 +93,23 @@ func RandomKey(size int) []byte {
 func BlackBox(plaintext []byte) []byte {
 	seed := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(seed)
-	// FIXME: add padding before and after plaintext,
-	// gives different errors for EBC anc CBC
-	//bufSize := r.Intn(11)
-	bufSize := 8
+	// random padding
+	bufSize := r.Intn(11)
 	if bufSize < 5 {
 		bufSize += 5
 	}
 	buf := make([]byte, bufSize)
+	// padd and then pad again
 	plaintext = append(plaintext, buf...)
 	plaintext = append(buf, plaintext...)
+	plaintext = PKSPad(plaintext, 16)
+	// generate random keys etcy
 	key := RandomKey(16)
 	iv := RandomKey(16)
 
 	which := r.Intn(2)
 	if which == 1 {
-		fmt.Println("CBC encrypting ssh.")
+		fmt.Println("CBC encrypting")
 		return EncryptCBC(key, plaintext, iv)
 	}
 	fmt.Println("ECB encrypting")
@@ -134,7 +117,7 @@ func BlackBox(plaintext []byte) []byte {
 }
 
 func DetectECB(text []byte) bool {
-	amt := len(text) / 16
+	amt := len(text) / 16 // blocksize is going to be 16
 	repeats := make(map[string]bool)
 	for i := 0; i < amt; i++ {
 		if repeats[string(text[i*16:i*16+16])] {
@@ -143,6 +126,25 @@ func DetectECB(text []byte) bool {
 		repeats[string(text[i*16:i*16+16])] = true
 	}
 	return false
+}
+
+func Oracle(plaintext []byte) []byte {
+	seed := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(seed)
+	// random padding
+	bufSize := r.Intn(11)
+	if bufSize < 5 {
+		bufSize += 5
+	}
+	buf := make([]byte, bufSize)
+	// padd and then pad again
+	plaintext = append(plaintext, buf...)
+	plaintext = append(buf, plaintext...)
+	plaintext = PKSPad(plaintext, 16)
+	// generate random keys etcy
+	key := globalkey
+
+	return EncryptECB(key, plaintext)
 }
 
 var (
@@ -160,12 +162,10 @@ var (
 
 func main() {
 	// challenge 9
-	// FIXME: Which version is correct?
-	fmt.Println(string(PadPKCS([]byte("YELLOW SUBMARINE"), 20)))
-	fmt.Println(PadPKCS([]byte("YELLOW SUBMARINE"), 20))
 	fmt.Println(string(PKSPad([]byte("YELLOW SUBMARINE"), 20)))
 	fmt.Println(PKSPad([]byte("YELLOW SUBMARINE"), 20))
 	// challenge 10
+	fmt.Println("Challenge 10")
 	key = []byte("YELLOW SUBMARINE")
 	file, err = os.Open("inputs/challenge_10.txt")
 	if err != nil {
@@ -184,17 +184,18 @@ func main() {
 	// initialization vector is all ASCII zeroes
 	iv := make([]byte, len(key))
 	plaintext := DecryptCBC(key, ciphertext, iv)
-	fmt.Println(string(plaintext[:10])) // Play that funky music white boy
+	fmt.Println(string(plaintext[:15])) // Play that funky music white boy
 	ciphertext = EncryptCBC(key, plaintext, iv)
 	fmt.Println(ciphertext[:10])
 	plaintext = DecryptCBC(key, ciphertext, iv)
-	fmt.Println(string(plaintext[:10]))
+	fmt.Println(string(plaintext[:15]))
 	// Challenge 11
+	fmt.Println("Challenge 11")
 	fmt.Println(DetectECB(BlackBox(plaintext)))
-	// challenge 12
-	// 64 len []byte
+	// challenge 12 byte at a time
+	fmt.Println("Challenge 12")
+	// 64 len []byte:
 	plaintext = []byte("twas brillig and the slithey toves, did gyre and gimble in the w")
-	fmt.Println(len(plaintext))
 	globalkey = RandomKey(16)
 	str := "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg"
 	str += "aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq"
@@ -205,6 +206,8 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(padbyte[0])
 
+	encryptedAlone := Oracle(plaintext)
+	encryptedTogether := Oracle(append(plaintext, padbyte...))
+	fmt.Println(len(encryptedTogether), len(encryptedAlone))
 }
