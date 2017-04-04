@@ -58,6 +58,7 @@ func (t *table) rem(key string) error {
 	for _, x := range t.table[hash] {
 		if x.key == key {
 			// delete item from list
+			// TODO: allow for collisions
 			t.table[hash] = make([]value, 0)
 			return nil
 		}
