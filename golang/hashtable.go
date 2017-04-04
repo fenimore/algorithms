@@ -57,8 +57,11 @@ func (t *table) rem(key int) error {
 	for _, x := range t.table[hash] {
 		if x.key == key {
 			// delete item from list
-			t.table[hash] = append(t.table[hash][:key],
-				t.table[hash][key:+1]...)
+			if len(t.table[hash]) > 1 {
+				t.table[hash] = append(t.table[hash][:key], t.table[hash][key+1:]...)
+			} else {
+				t.table[hash] = make([]value, 0)
+			}
 			return nil
 		}
 	}
@@ -72,6 +75,8 @@ func main() {
 	fmt.Println(t.get(64))
 	t.set(1, "Woot")
 	fmt.Println(t.get(2))
+	//  deletion
+	fmt.Println("\nDeletion:")
 	fmt.Println(t.get(1))
 	err = t.rem(1)
 	fmt.Println(err)
