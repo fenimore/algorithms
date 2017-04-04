@@ -8,7 +8,7 @@ import "fmt"
 import "errors"
 
 type value struct {
-	key int
+	key string
 	val string
 }
 
@@ -25,12 +25,13 @@ func NewTable(size int) *table {
 }
 
 // hash only takes keys that are ints
-func (t *table) hash(key int) int {
+func (t *table) hash(key string) int {
 	// mod keeps the value in the correct range
-	return key % t.size
+	val := key[0] + key[1]
+	return int(val) % t.size
 }
 
-func (t *table) set(key int, val string) {
+func (t *table) set(key string, val string) {
 	idx := t.hash(key)
 	for _, x := range t.table[idx] {
 		if x.key == key {
@@ -42,46 +43,43 @@ func (t *table) set(key int, val string) {
 	t.table[idx] = append(t.table[idx], value{key, val})
 }
 
-func (t *table) get(key int) (string, error) {
+func (t *table) get(key string) (string, error) {
 	for _, x := range t.table[t.hash(key)] {
 		if x.key == key {
 			return x.val, nil
 		}
 	}
 	// if doesn't exist, return error
-	return "", errors.New("Key doesn't exist")
+	return "", errors.New("Error Get: Key doesn't exist")
 }
 
-func (t *table) rem(key int) error {
+func (t *table) rem(key string) error {
 	hash := t.hash(key)
 	for _, x := range t.table[hash] {
 		if x.key == key {
 			// delete item from list
-			// catch if there are no collisions
-			if len(t.table[hash]) > 1 {
-				t.table[hash] = append(t.table[hash][:key], t.table[hash][key+1:]...)
-			} else {
-				t.table[hash] = make([]value, 0)
-			}
+			t.table[hash] = make([]value, 0)
 			return nil
 		}
 	}
-	return errors.New("Key doesn't exist")
+	return errors.New("Error Rem: Key doesn't exist")
 }
 
 func main() {
 	var err error
 	t := NewTable(128)
-	t.set(64, "testing")
-	fmt.Println(t.get(64))
-	t.set(1, "Woot")
-	fmt.Println(t.get(2))
+	t.set("foo", "testing")
+	fmt.Println(t.get("woot"))
+	t.set("bar", "Woot")
+	fmt.Println(t.get("foo"))
 	//  deletion
 	fmt.Println("\nDeletion:")
-	fmt.Println(t.get(1))
-	err = t.rem(1)
+	fmt.Println(t.get("bar"))
+	err = t.rem("bar")
 	fmt.Println(err)
-	fmt.Println(t.get(1))
+	fmt.Println(t.get("bar"))
+	err = t.rem("bar")
+	fmt.Println(err)
 	// TODO: check for collisions
 
 }
