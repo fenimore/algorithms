@@ -1,45 +1,79 @@
+// Hash table implementation
+// for simplicity, only use int as key
+// TODO: convert string to int for string as key?
+// get/set/remove
 package main
 
 import "fmt"
+import "errors"
 
-type HashValue struct {
-	key   string
-	value string
+type value struct {
+	key int
+	val string
 }
 
-type HashTable struct {
-	values [4][]string // max four items
+type table struct {
+	size  int
+	table [][]value
 }
 
-func Put(key string, val string) {
-
+func NewTable(size int) *table {
+	t := new(table)
+	t.size = size
+	t.table = make([][]value, size)
+	return t
 }
 
-func Hash(key string) int {
-	if len(key) < 0 {
-		return -1 // error
+// hash only takes keys that are ints
+func (t *table) hash(key int) int {
+	// mod keeps the value in the correct range
+	return key % t.size
+}
+
+func (t *table) set(key int, val string) {
+	idx := t.hash(key)
+	for _, x := range t.table[idx] {
+		if x.key == key {
+			x.val = val
+			return
+		}
 	}
-	//fmt.Println(key[:1])
-	//fmt.Println([]byte(key[:1])[0])
-	//fmt.Println([]byte(key[:1])[0] >> 1)
-	//fmt.Println("By two", []byte(key[:1])[0]<<6)
-	//fmt.Printf("%b ", []byte(key[:1])[0]>>6)
+	// if doesn't exist, add to table at key
+	t.table[idx] = append(t.table[idx], value{key, val})
+}
 
-	return int([]byte(key[:1])[0]) % 10
+func (t *table) get(key int) (string, error) {
+	for _, x := range t.table[t.hash(key)] {
+		if x.key == key {
+			return x.val, nil
+		}
+	}
+	// if doesn't exist, return error
+	return "", errors.New("Key doesn't exist")
+}
+
+func (t *table) rem(key int) error {
+	hash := t.hash(key)
+	for _, x := range t.table[hash] {
+		if x.key == key {
+			// delete item from list
+			t.table[hash] = append(t.table[hash][:key],
+				t.table[hash][key:+1]...)
+			return nil
+		}
+	}
+	return errors.New("Key doesn't exist")
 }
 
 func main() {
-	fmt.Println(" hello", Hash("hello"))
-	fmt.Println(" hello", Hash("Hello"))
-	fmt.Println("Brazen", Hash("brazen"))
-	fmt.Println("zen", Hash("zen"))
-	fmt.Println("Arazan", Hash("Arazen"))
-	fmt.Println("2", Hash("2"))
-	fmt.Println("3", Hash("3"))
-	fmt.Println("4", Hash("4"))
-	fmt.Println("5", Hash("5"))
-	fmt.Println("1", Hash("1"))
-	fmt.Println("0", Hash("0"))
-	fmt.Println("-", Hash("-2"))
-	fmt.Println("=", Hash("=2"))
+	var err error
+	t := NewTable(128)
+	t.set(64, "testing")
+	fmt.Println(t.get(64))
+	t.set(1, "Woot")
+	fmt.Println(t.get(2))
+	fmt.Println(t.get(1))
+	err = t.rem(1)
+	fmt.Println(err)
+	fmt.Println(t.get(1))
 }
