@@ -57,6 +57,7 @@ func (t *table) rem(key int) error {
 	for _, x := range t.table[hash] {
 		if x.key == key {
 			// delete item from list
+			// catch if there are no collisions
 			if len(t.table[hash]) > 1 {
 				t.table[hash] = append(t.table[hash][:key], t.table[hash][key+1:]...)
 			} else {
@@ -81,4 +82,6 @@ func main() {
 	err = t.rem(1)
 	fmt.Println(err)
 	fmt.Println(t.get(1))
+	// TODO: check for collisions
+
 }
